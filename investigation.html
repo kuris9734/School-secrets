@@ -1,0 +1,2663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调查开始 - 寄宿学校的秘密</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+        }
+        
+        .investigation-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.4s ease;
+        }
+        
+        .investigation-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+        
+        .password-input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .password-input:focus {
+            border-color: #ff6b6b;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+        }
+        
+        .photo-comparison {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        
+        .photo-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: white;
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .photo-comparison:hover .photo-overlay {
+            transform: translateY(0);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(30, 30, 50, 0.95);
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .audio-player {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .document-viewer {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .code-snippet {
+            background: rgba(0, 0, 0, 0.7);
+            border-left: 4px solid #00ff00;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+        }
+        
+        .mystery-note {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            color: #ffd700;
+        }
+        
+        .encrypted-file {
+            background: rgba(255, 0, 255, 0.1);
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            color: #ff00ff;
+        }
+        
+        /* 被抓效果样式 */
+        .caught-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.95);
+            overflow: hidden;
+        }
+        
+        .blood-drip {
+            position: absolute;
+            top: -150px;
+            width: 6px;
+            height: 150px;
+            background: linear-gradient(to bottom, 
+                rgba(139, 0, 0, 0.9) 0%,
+                rgba(255, 0, 0, 1) 30%,
+                rgba(139, 0, 0, 0.8) 60%,
+                rgba(255, 0, 0, 0.9) 100%);
+            border-radius: 0 0 50% 50%;
+            animation: drip 2.5s ease-in infinite;
+            opacity: 0.9;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+        }
+        
+        @keyframes drip {
+            0% {
+                top: -150px;
+                opacity: 0.9;
+                transform: translateX(0);
+            }
+            50% {
+                opacity: 1;
+                transform: translateX(2px);
+            }
+            100% {
+                top: calc(100vh + 50px);
+                opacity: 0.4;
+                transform: translateX(-2px);
+            }
+        }
+        
+        .blood-stream {
+            position: absolute;
+            top: -10%;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            background: linear-gradient(to bottom, 
+                rgba(139, 0, 0, 0.15) 0%,
+                rgba(255, 0, 0, 0.25) 15%,
+                rgba(139, 0, 0, 0.2) 30%,
+                rgba(255, 0, 0, 0.3) 45%,
+                rgba(139, 0, 0, 0.18) 60%,
+                rgba(255, 0, 0, 0.28) 75%,
+                rgba(139, 0, 0, 0.12) 90%,
+                rgba(255, 0, 0, 0.2) 100%);
+            animation: stream 1.5s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes stream {
+            0%, 100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+            50% {
+                transform: translateY(-15px);
+                opacity: 0.6;
+            }
+        }
+        
+        .caught-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10rem;
+            font-weight: 900;
+            color: #ff0000;
+            text-shadow: 
+                0 0 10px #ff0000,
+                0 0 20px #ff0000,
+                0 0 30px #ff0000,
+                0 0 40px #ff0000,
+                0 0 50px #ff0000,
+                0 0 60px #ff0000,
+                0 0 80px #8b0000;
+            animation: shake 0.08s infinite, glow 0.8s ease-in-out infinite alternate;
+            z-index: 10000;
+            white-space: nowrap;
+            letter-spacing: 0.1em;
+        }
+        
+        @keyframes shake {
+            0%, 100% {
+                transform: translate(-50%, -50%) translateX(0) translateY(0) rotate(0deg);
+            }
+            10% {
+                transform: translate(-50%, -50%) translateX(-8px) translateY(-4px) rotate(-1deg);
+            }
+            20% {
+                transform: translate(-50%, -50%) translateX(8px) translateY(4px) rotate(1deg);
+            }
+            30% {
+                transform: translate(-50%, -50%) translateX(-6px) translateY(3px) rotate(-0.5deg);
+            }
+            40% {
+                transform: translate(-50%, -50%) translateX(6px) translateY(-3px) rotate(0.5deg);
+            }
+            50% {
+                transform: translate(-50%, -50%) translateX(-4px) translateY(-2px) rotate(-0.8deg);
+            }
+            60% {
+                transform: translate(-50%, -50%) translateX(4px) translateY(2px) rotate(0.8deg);
+            }
+            70% {
+                transform: translate(-50%, -50%) translateX(-7px) translateY(4px) rotate(-1.2deg);
+            }
+            80% {
+                transform: translate(-50%, -50%) translateX(7px) translateY(-4px) rotate(1.2deg);
+            }
+            90% {
+                transform: translate(-50%, -50%) translateX(-5px) translateY(2px) rotate(-0.6deg);
+            }
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 
+                    0 0 10px #ff0000,
+                    0 0 20px #ff0000,
+                    0 0 30px #ff0000,
+                    0 0 40px #ff0000,
+                    0 0 50px #ff0000,
+                    0 0 60px #ff0000,
+                    0 0 80px #8b0000;
+                filter: brightness(1);
+            }
+            to {
+                text-shadow: 
+                    0 0 20px #ff0000,
+                    0 0 30px #ff0000,
+                    0 0 40px #ff0000,
+                    0 0 50px #ff0000,
+                    0 0 60px #ff0000,
+                    0 0 80px #ff0000,
+                    0 0 100px #8b0000;
+                filter: brightness(1.2);
+            }
+        }
+        
+        /* 717彩蛋样式 */
+        .easter-egg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .easter-egg-text {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 
+                0 0 10px #ffffff,
+                0 0 20px #ffffff,
+                0 0 30px #00ffff,
+                0 0 40px #00ffff;
+            z-index: 10000;
+            white-space: nowrap;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+        }
+        
+        .easter-egg-image {
+            max-width: 80%;
+            max-height: 60vh;
+            object-fit: contain;
+            opacity: 0;
+            animation: fadeIn 1s ease-in forwards;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .caught-text {
+                font-size: 5rem;
+            }
+            
+            .easter-egg-text {
+                font-size: 2rem;
+            }
+            
+            /* 拼图环节按钮移动端样式 */
+            #puzzle-container ~ div button,
+            .bg-gray-900 button,
+            #encrypted-files-modal button {
+                padding: 1rem 1.5rem !important;
+                font-size: 1.1rem !important;
+                min-height: 50px;
+                touch-action: manipulation;
+            }
+            
+            /* 拼图块移动端样式 */
+            #puzzle-container > div {
+                padding: 1rem !important;
+                font-size: 1.5rem !important;
+                min-height: 60px;
+                touch-action: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 w-full z-50 bg-black bg-opacity-40 backdrop-blur-md">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-search text-2xl text-red-400"></i>
+                    <span class="text-xl font-bold text-white">调查进行中</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="showHelp()" class="text-gray-300 hover:text-white transition-colors">
+                        <i class="fas fa-question-circle text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="pt-24 pb-12">
+        <div class="container mx-auto px-6">
+            <!-- 调查区域 -->
+            <div class="max-w-4xl mx-auto">
+                <!-- 初始调查界面 -->
+                <div id="initial-investigation" class="investigation-card rounded-2xl p-8">
+                    <h2 class="text-3xl font-bold text-white mb-6">张昊的宿舍</h2>
+                    <div class="mb-6">
+                        <p class="text-gray-300 text-lg leading-relaxed mb-4">
+                            你站在张昊学长的宿舍房间里，空气中弥漫着一种奇怪的气氛。学校声称他因家庭原因请假回家，
+                            但这个说法似乎有些不对劲。你需要仔细检查房间，寻找可能的线索。
+                        </p>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <button onclick="checkPhone()" class="bg-blue-600 hover:bg-blue-700 text-white p-6 rounded-xl transition-all transform hover:scale-105">
+                            <i class="fas fa-mobile-alt text-3xl mb-3"></i>
+                            <div class="font-bold">检查手机</div>
+                            <div class="text-sm opacity-80">学长的手机在抽屉里</div>
+                        </button>
+                        
+                        <button onclick="checkPhotos()" class="bg-green-600 hover:bg-green-700 text-white p-6 rounded-xl transition-all transform hover:scale-105">
+                            <i class="fas fa-camera text-3xl mb-3"></i>
+                            <div class="font-bold">查看照片</div>
+                            <div class="text-sm opacity-80">书桌上有几张照片</div>
+                        </button>
+                        
+                        <button onclick="checkDesk()" class="bg-yellow-600 hover:bg-yellow-700 text-white p-6 rounded-xl transition-all transform hover:scale-105">
+                            <i class="fas fa-search text-3xl mb-3"></i>
+                            <div class="font-bold">检查书桌</div>
+                            <div class="text-sm opacity-80">仔细查看书桌</div>
+                        </button>
+                        
+                        <button onclick="checkRoom()" class="bg-purple-600 hover:bg-purple-700 text-white p-6 rounded-xl transition-all transform hover:scale-105">
+                            <i class="fas fa-home text-3xl mb-3"></i>
+                            <div class="font-bold">检查房间</div>
+                            <div class="text-sm opacity-80">全面搜查房间</div>
+                        </button>
+                    </div>
+                    
+                    <!-- 前往715宿舍按钮（获得所有线索后显示） -->
+                    <div id="go-to-dormitory-section" class="mt-6 hidden">
+                        <button onclick="goToDormitory()" class="bg-red-600 hover:bg-red-700 text-white p-6 rounded-xl transition-all transform hover:scale-105 w-full">
+                            <i class="fas fa-door-open text-3xl mb-3"></i>
+                            <div class="font-bold">离开学长宿舍</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 手机调查界面 -->
+                <div id="phone-investigation" class="investigation-card rounded-2xl p-8 hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center">
+                        <i class="fas fa-mobile-alt mr-3 text-blue-400"></i>
+                        学长的手机
+                    </h2>
+                    
+                    <div class="mb-6">
+                        <img src="resources/phone_messages.jpg" alt="手机短信" class="w-full max-w-md mx-auto rounded-lg shadow-lg">
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button onclick="goBack()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            返回
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 照片对比界面 -->
+                <div id="photo-investigation" class="investigation-card rounded-2xl p-8 hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center">
+                        <i class="fas fa-camera mr-3 text-green-400"></i>
+                        照片
+                    </h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div class="photo-comparison" onclick="showPhotoDetail(1)">
+                            <img src="resources/photo2.jpg" alt="照片1" class="w-full h-64 object-cover">
+                            <div class="photo-overlay">
+                                <p class="font-semibold">照片 A</p>
+                                <p class="text-sm opacity-80">图书馆</p>
+                            </div>
+                        </div>
+                        
+                        <div class="photo-comparison" onclick="showPhotoDetail(2)">
+                            <img src="resources/photo1.jpg" alt="照片2" class="w-full h-64 object-cover">
+                            <div class="photo-overlay">
+                                <p class="font-semibold">照片 B</p>
+                                <p class="text-sm opacity-80">拍摄楼层：三楼</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button onclick="goBack()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            返回
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 宿舍楼选择房间界面 -->
+                <div id="dormitory-building" class="investigation-card rounded-2xl p-8 hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center">
+                        <i class="fas fa-building mr-3 text-red-400"></i>
+                        宿舍楼
+                    </h2>
+                    
+                    <div class="mb-6">
+                        <img src="resources/dormitory.jpg" alt="宿舍走廊" class="w-full h-64 object-cover rounded-lg">
+                    </div>
+                    
+                    <div class="bg-gray-800 bg-opacity-50 rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-white mb-4">选择要进入的房间</h3>
+                        <p class="text-gray-300 mb-4">
+                            你来到了宿舍楼，需要选择进入哪个房间。选错可能会被发现...
+                        </p>
+                        <div class="grid grid-cols-3 gap-4">
+                            <button onclick="selectRoom('713')" class="bg-gray-700 hover:bg-gray-600 text-white p-4 rounded-lg transition-colors">
+                                <div class="font-bold text-lg">713</div>
+                                <div class="text-xs opacity-80">房间</div>
+                            </button>
+                            <button onclick="selectRoom('714')" class="bg-gray-700 hover:bg-gray-600 text-white p-4 rounded-lg transition-colors">
+                                <div class="font-bold text-lg">714</div>
+                                <div class="text-xs opacity-80">房间</div>
+                            </button>
+                            <button onclick="selectRoom('715')" class="bg-gray-700 hover:bg-gray-600 text-white p-4 rounded-lg transition-colors">
+                                <div class="font-bold text-lg">715</div>
+                                <div class="text-xs opacity-80">房间</div>
+                            </button>
+                            <button onclick="selectRoom('716')" class="bg-gray-700 hover:bg-gray-600 text-white p-4 rounded-lg transition-colors">
+                                <div class="font-bold text-lg">716</div>
+                                <div class="text-xs opacity-80">房间</div>
+                            </button>
+                            <button onclick="selectRoom('717')" class="bg-gray-700 hover:bg-gray-600 text-white p-4 rounded-lg transition-colors">
+                                <div class="font-bold text-lg">717</div>
+                                <div class="text-xs opacity-80">房间</div>
+                            </button>
+                            <button onclick="selectRoom('718')" class="bg-gray-700 hover:bg-gray-600 text-white p-4 rounded-lg transition-colors">
+                                <div class="font-bold text-lg">718</div>
+                                <div class="text-xs opacity-80">房间</div>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button onclick="goBack()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            返回
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 宿舍搜索界面 -->
+                <div id="dormitory-investigation" class="investigation-card rounded-2xl p-8 hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center">
+                        <i class="fas fa-door-open mr-3 text-red-400"></i>
+                        715宿舍
+                    </h2>
+                    
+                    <div class="mb-6">
+                        <img src="resources/dormitory.jpg" alt="宿舍走廊" class="w-full h-64 object-cover rounded-lg">
+                    </div>
+                    
+                    <div class="bg-gray-800 bg-opacity-50 rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-white mb-4">8号柜子</h3>
+                        <p class="text-gray-300 mb-4">
+                            一个普通的柜子，上面有一个数字密码锁。
+                        </p>
+                    </div>
+                    
+                    <div class="bg-gray-900 bg-opacity-50 rounded-lg p-6 mb-6">
+                        <h4 class="text-lg font-bold text-white mb-4">输入密码</h4>
+                        <div class="flex items-center space-x-4">
+                            <input type="text" id="lock-password" maxlength="4" class="password-input px-4 py-2 rounded-lg text-center text-2xl font-mono w-32" placeholder="----">
+                            <button onclick="checkPassword()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors">
+                                <i class="fas fa-unlock mr-2"></i>
+                                解锁
+                            </button>
+                        </div>
+                        <p id="password-hint" class="text-gray-400 text-sm mt-2"></p>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button onclick="goBackToBuilding()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            返回
+                        </button>
+                        <button onclick="saveGameState('715宿舍')" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-save mr-2"></i>
+                            存档
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 柜子打开后的界面 -->
+                <div id="locker-investigation" class="investigation-card rounded-2xl p-8 hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center">
+                        <i class="fas fa-unlock mr-3 text-green-400"></i>
+                        柜子里的发现
+                    </h2>
+                    
+                    <div class="mb-6">
+                        <p class="text-gray-300 text-lg leading-relaxed mb-4" id="locker-description">
+                            柜子打开了！里面有一张纸条...
+                        </p>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-8 mb-6" id="locker-items">
+                        <button onclick="checkMysteriousNote()" class="bg-yellow-600 hover:bg-yellow-700 text-white p-6 rounded-xl transition-all transform hover:scale-105">
+                            <i class="fas fa-sticky-note text-3xl mb-3"></i>
+                            <div class="font-bold">神秘纸条</div>
+                            <div class="text-sm opacity-80">一张手写的纸条</div>
+                        </button>
+                        
+                        <button onclick="checkEncryptedFiles()" id="encrypted-files-btn" class="bg-purple-600 hover:bg-purple-700 text-white p-6 rounded-xl transition-all transform hover:scale-105 opacity-50 cursor-not-allowed hidden" disabled>
+                            <i class="fas fa-lock text-3xl mb-3"></i>
+                            <div class="font-bold">加密U盘</div>
+                            <div class="text-sm opacity-80">里面存放着地下室平面图</div>
+                        </button>
+                        
+                        <button onclick="checkAudioTape()" id="audio-tape-btn" class="bg-red-600 hover:bg-red-700 text-white p-6 rounded-xl transition-all transform hover:scale-105 opacity-50 cursor-not-allowed hidden" disabled>
+                            <i class="fas fa-file-audio text-3xl mb-3"></i>
+                            <div class="font-bold">录音文件</div>
+                            <div class="text-sm opacity-80">从U盘中提取的录音文件</div>
+                        </button>
+                        
+                        <button onclick="checkBasementPlan()" id="basement-plan-btn" class="bg-blue-600 hover:bg-blue-700 text-white p-6 rounded-xl transition-all transform hover:scale-105 opacity-50 cursor-not-allowed hidden" disabled>
+                            <i class="fas fa-map text-3xl mb-3"></i>
+                            <div class="font-bold">地下室平面图</div>
+                            <div class="text-sm opacity-80">实验楼地下布局</div>
+                        </button>
+                    </div>
+                    
+                    <div class="flex space-x-4 flex-wrap gap-2">
+                        <button onclick="goBackToDormitory()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            返回宿舍
+                        </button>
+                        <button onclick="checkWardrobe()" id="wardrobe-btn" class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg transition-colors ${!gameState.hasDeskClue ? 'opacity-50 cursor-not-allowed' : ''}" ${!gameState.hasDeskClue ? 'disabled' : ''}>
+                            <i class="fas fa-tshirt mr-2"></i>
+                            检查衣柜
+                        </button>
+                        <button onclick="goToLibrary()" id="library-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors ${!gameState.hasReadNote ? 'opacity-50 cursor-not-allowed' : ''}" ${!gameState.hasReadNote ? 'disabled' : ''}>
+                            <i class="fas fa-book mr-2"></i>
+                            前往图书馆
+                        </button>
+                        <button onclick="goToWebsite()" id="website-btn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors opacity-50 cursor-not-allowed hidden" disabled>
+                            <i class="fas fa-external-link-alt mr-2"></i>
+                            查看手机链接
+                        </button>
+                        <button onclick="saveGameState('地下室')" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-save mr-2"></i>
+                            存档
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 衣柜界面 -->
+                <div id="wardrobe-investigation" class="investigation-card rounded-2xl p-8 hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center">
+                        <i class="fas fa-tshirt mr-3 text-orange-400"></i>
+                        宿舍衣柜
+                    </h2>
+                    
+                    <div class="mb-6">
+                        <p class="text-gray-300 text-lg leading-relaxed mb-4">
+                            你打开了衣柜，发现里面有一个带密码锁的小盒子。
+                        </p>
+                    </div>
+                    
+                    <div class="bg-gray-800 bg-opacity-50 rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-white mb-4">密码锁</h3>
+                        <p class="text-gray-300 mb-4">
+                            盒子上有一个字母数字密码锁，需要选择正确的密码。
+                        </p>
+                        <div class="bg-gray-900 bg-opacity-50 rounded-lg p-4">
+                            <h4 class="text-lg font-bold text-white mb-3">选择密码</h4>
+                            <p class="text-gray-400 text-sm mb-4">选择实验编号第8个：</p>
+                            <div class="grid grid-cols-4 gap-3">
+                                <button onclick="selectWardrobeCode('F8')" class="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg transition-colors">
+                                    <div class="font-bold">F8</div>
+                                </button>
+                                <button onclick="selectWardrobeCode('G8')" class="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg transition-colors">
+                                    <div class="font-bold">G8</div>
+                                </button>
+                                <button onclick="selectWardrobeCode('H8')" class="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg transition-colors">
+                                    <div class="font-bold">H8</div>
+                                </button>
+                                <button onclick="selectWardrobeCode('I8')" class="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg transition-colors">
+                                    <div class="font-bold">I8</div>
+                                </button>
+                            </div>
+                            <p id="wardrobe-password-hint" class="text-gray-400 text-sm mt-3"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button onclick="goBackToLocker()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            返回
+                        </button>
+                    </div>
+                </div>
+
+                <!-- B-7房间场景 -->
+                <div id="b7-room-investigation" class="investigation-card rounded-2xl p-8 hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center">
+                        <i class="fas fa-door-closed mr-3 text-red-400"></i>
+                        B-7房间
+                    </h2>
+                    
+                    <div class="mb-6">
+                        <img src="resources/laboratory.jpg" alt="B-7房间" class="w-full h-64 object-cover rounded-lg">
+                    </div>
+                    
+                    <div class="bg-gray-800 bg-opacity-50 rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-white mb-4">房间内的电脑</h3>
+                        <p class="text-gray-300 mb-4">
+                            你进入了B-7房间，发现房间里有一台电脑，屏幕上显示着一个网站地址。
+                        </p>
+                        <div class="bg-black bg-opacity-70 p-4 rounded-lg font-mono text-sm mb-4">
+                            <p class="text-green-400 mb-2">电脑屏幕上显示：</p>
+                            <p class="text-white">https://xkorzttrymbp6.ok.kimi.link/hiddentruth.html</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-900 bg-opacity-50 rounded-lg p-6 mb-6">
+                        <h4 class="text-lg font-bold text-white mb-3">输入从网站获得的线索</h4>
+                        <div class="flex items-center space-x-4 mb-3">
+                            <input type="text" id="website-clue" maxlength="50" class="password-input px-4 py-2 rounded-lg text-center text-sm font-mono w-full" placeholder="xxxx-xxxxxx-xxxxxxx">
+                        </div>
+                        <p id="website-clue-hint" class="text-gray-400 text-sm mb-3"></p>
+                        <button onclick="verifyWebsiteClue()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors w-full">
+                            <i class="fas fa-unlock mr-2"></i>
+                            验证线索
+                        </button>
+                        <div id="wrong-password-button" class="hidden mt-3">
+                            <a href="caught.html" target="_blank" class="block bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded-lg transition-colors w-full text-center opacity-50 cursor-not-allowed pointer-events-none">
+                                <i class="fas fa-external-link-alt mr-2"></i>
+                                访问完整网站
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button onclick="goBackToLocker()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            返回
+                        </button>
+                        <button onclick="saveGameState('B-7房间')" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-save mr-2"></i>
+                            存档
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 图书馆场景 -->
+                <div id="library-investigation" class="investigation-card rounded-2xl p-8 hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center">
+                        <i class="fas fa-book mr-3 text-blue-400"></i>
+                        图书馆3楼
+                    </h2>
+                    
+                    <div class="mb-6">
+                        <p class="text-gray-300 text-lg leading-relaxed mb-4">
+                            你来到了图书馆3楼，找到了储物柜区域。根据纸条提示，需要找到编号H8的储物柜。
+                        </p>
+                    </div>
+                    
+                    <div class="bg-gray-800 bg-opacity-50 rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-white mb-4">储物柜H8</h3>
+                        <p class="text-gray-300 mb-4">
+                            储物柜上有一个密码锁，需要输入密码才能打开。
+                        </p>
+                        
+                        <div class="bg-yellow-900 bg-opacity-30 border border-yellow-500 rounded-lg p-4 mb-4 cursor-pointer hover:bg-opacity-40 transition-colors" onclick="showCaesarHint()" id="caesar-hint-box">
+                            <p class="text-yellow-200 text-xs mb-2">储物柜上贴着一张纸条：</p>
+                            <p class="text-yellow-300 font-mono text-sm">"密码：KHUR"</p>
+                            <div id="caesar-extra-hint" class="hidden mt-2">
+                                <p class="text-yellow-200 text-xs italic">好像要移动几位，咦。。。这里是几楼</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-900 bg-opacity-50 rounded-lg p-4">
+                            <h4 class="text-lg font-bold text-white mb-3">输入解码后的密码</h4>
+                            <div class="flex items-center space-x-4 mb-3">
+                                <input type="text" id="caesar-password" maxlength="10" class="password-input px-4 py-2 rounded-lg text-center text-lg font-mono w-full" placeholder="输入解码后的密码...">
+                            </div>
+                            <p id="caesar-password-hint" class="text-gray-400 text-sm mb-3"></p>
+                            <button onclick="checkCaesarPassword()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors w-full">
+                                <i class="fas fa-unlock mr-2"></i>
+                                解锁储物柜
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button onclick="goBackToLocker()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            返回
+                        </button>
+                        <button onclick="saveGameState('图书馆')" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-save mr-2"></i>
+                            存档
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 秘密网站界面 -->
+                <div id="website-investigation" class="investigation-card rounded-2xl p-8 hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6 flex items-center">
+                        <i class="fas fa-link mr-3 text-purple-400"></i>
+                        隐藏的网站
+                    </h2>
+                    
+                    <div class="bg-gray-800 bg-opacity-50 rounded-lg p-6 mb-6">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-globe text-2xl text-blue-400 mr-3"></i>
+                            <span class="text-blue-300 font-mono">hiddentruth.mingde.edu</span>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            一个隐藏的网站，需要进一步探索。
+                        </p>
+                    </div>
+                    
+                    <div class="bg-red-900 bg-opacity-30 border border-red-500 rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold text-red-200 mb-4">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            机密文件
+                        </h3>
+                        <div class="space-y-3 text-red-100">
+                            <p>项目名称：优秀学生强化计划</p>
+                            <p>项目代码：Project-ALPHA</p>
+                            <p>实验地点：实验楼地下二层</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-900 bg-opacity-30 border border-blue-500 rounded-lg p-4 mb-6">
+                        <p class="text-blue-200 text-sm mb-3">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            你发现了隐藏网站的地址，可以访问更详细的机密档案。
+                        </p>
+                        <a href="hiddentruth.html?full=1" target="_blank" class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-external-link-alt mr-2"></i>
+                            访问完整网站
+                        </a>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button onclick="goBackToLocker()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            返回
+                        </button>
+                        <button onclick="completeGame()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-trophy mr-2"></i>
+                            完成调查
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- BGM音频 -->
+    <audio id="bgm3" loop>
+        <source src="BGM/bgm3.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="bgm1" loop>
+        <source src="BGM/bgm1.mp3" type="audio/mpeg">
+    </audio>
+    <!-- 717彩蛋音频 -->
+    <audio id="xuezhiqian-audio">
+        <source src="BGM/薛之谦-天外来物.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- 模态框 -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modal-title" class="text-2xl font-bold text-white"></h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="modal-body" class="text-gray-300"></div>
+        </div>
+    </div>
+
+    <!-- 帮助模态框 -->
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold text-white">游戏帮助</h3>
+                <button onclick="closeHelp()" class="text-gray-400 hover:text-white text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="text-gray-300 space-y-4">
+                <p><strong>游戏目标：</strong>通过收集线索、解开谜题，找出张昊学长失踪的真相。</p>
+                <p><strong>操作方法：</strong></p>
+                <ul class="list-disc list-inside ml-4 space-y-2">
+                    <li>点击不同的调查选项来寻找线索</li>
+                    <li>仔细观察图片和文字中的细节</li>
+                    <li>将不同的线索组合起来解谜</li>
+                    <li>输入正确的密码来解锁新的区域</li>
+                </ul>
+                <p><strong>提示：</strong>有些线索需要结合多个信息才能理解其真正含义。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 游戏状态
+        // 从localStorage读取失败次数（跨会话累计）
+        function getStoredFailureCount() {
+            const stored = localStorage.getItem('gameFailureCount');
+            return stored ? parseInt(stored, 10) : 0;
+        }
+        
+        // 保存失败次数到localStorage
+        function saveFailureCount(count) {
+            localStorage.setItem('gameFailureCount', count.toString());
+        }
+        
+        // 清除统计数据（通关后）
+        function clearGameStats() {
+            localStorage.removeItem('gameFailureCount');
+        }
+        
+        // 存档系统
+        function saveGameState(checkpointName) {
+            const saveData = {
+                ...gameState,
+                checkpointName: checkpointName,
+                saveTime: new Date().toLocaleString('zh-CN'),
+                startTime: gameState.startTime // 保持开始时间不变
+            };
+            localStorage.setItem('gameSaveData', JSON.stringify(saveData));
+            showNotification(`已保存存档：${checkpointName}`);
+        }
+        
+        // 加载存档
+        function loadGameState() {
+            const saveData = localStorage.getItem('gameSaveData');
+            if (saveData) {
+                try {
+                    const loaded = JSON.parse(saveData);
+                    // 恢复游戏状态
+                    Object.assign(gameState, loaded);
+                    // 保持失败次数累计
+                    gameState.failureCount = getStoredFailureCount();
+                    // 恢复界面状态
+                    restoreGameFromCheckpoint(loaded.checkpointName);
+                    showNotification(`已从存档点继续：${loaded.checkpointName}`);
+                    return true;
+                } catch (e) {
+                    console.error('加载存档失败:', e);
+                    return false;
+                }
+            }
+            return false;
+        }
+        
+        // 检查是否有存档
+        function hasSaveData() {
+            return localStorage.getItem('gameSaveData') !== null;
+        }
+        
+        // 清除存档
+        function clearSaveData() {
+            localStorage.removeItem('gameSaveData');
+        }
+        
+        // 从存档点恢复游戏
+        function restoreGameFromCheckpoint(checkpointName) {
+            hideAllSections();
+            
+            // 停止所有BGM
+            const bgm3 = document.getElementById('bgm3');
+            const bgm1 = document.getElementById('bgm1');
+            if (bgm3) bgm3.pause();
+            if (bgm1) bgm1.pause();
+            isBasementBGMPlaying = false;
+            
+            // 根据存档点恢复对应的界面
+            switch(checkpointName) {
+                case '图书馆':
+                    document.getElementById('library-investigation').classList.remove('hidden');
+                    gameState.currentLocation = 'library';
+                    // 恢复BGM3
+                    if (bgm3) {
+                        bgm3.currentTime = 0;
+                        bgm3.play().catch(e => console.log('BGM播放失败'));
+                    }
+                    updateLockerInterface();
+                    break;
+                case '地下室':
+                    document.getElementById('locker-investigation').classList.remove('hidden');
+                    gameState.currentLocation = 'locker';
+                    // 如果已经解决地下室，切换到BGM1
+                    if (gameState.hasSolvedBasement) {
+                        switchToBasementBGM();
+                    } else {
+                        // 恢复BGM3
+                        if (bgm3) {
+                            bgm3.currentTime = 0;
+                            bgm3.play().catch(e => console.log('BGM播放失败'));
+                        }
+                    }
+                    updateLockerInterface();
+                    break;
+                case '715宿舍':
+                    document.getElementById('dormitory-investigation').classList.remove('hidden');
+                    gameState.currentLocation = 'dormitory';
+                    // 恢复BGM3
+                    if (bgm3) {
+                        bgm3.currentTime = 0;
+                        bgm3.play().catch(e => console.log('BGM播放失败'));
+                    }
+                    break;
+                case 'B-7房间':
+                    document.getElementById('b7-room-investigation').classList.remove('hidden');
+                    gameState.currentLocation = 'b7';
+                    switchToBasementBGM();
+                    break;
+                default:
+                    // 默认恢复初始界面
+                    document.getElementById('initial-investigation').classList.remove('hidden');
+                    gameState.currentLocation = 'initial';
+                    // 恢复BGM3
+                    if (bgm3) {
+                        bgm3.currentTime = 0;
+                        bgm3.play().catch(e => console.log('BGM播放失败'));
+                    }
+                    updateInitialInterface();
+            }
+            
+            // 更新所有界面状态
+            updateInitialInterface();
+            updateLockerInterface();
+            updateWebsiteButton();
+        }
+        
+        let gameState = {
+            hasPhoneClue: false,
+            hasPhotoClue: false,
+            hasDeskClue: false,
+            hasRoomClue: false,
+            hasLockerKey: false,
+            hasReadNote: false,
+            hasFoundUSB: false,
+            hasDecryptedFiles: false,
+            hasWebsitePassword: false,
+            hasDecodedAudio: false,
+            hasFoundBasementPlan: false,
+            hasSolvedBasement: false,
+            currentLocation: 'initial',
+            libraryFloor: 3,
+            currentBasementRoom: 'B-1',
+            // 统计数据
+            startTime: Date.now(),
+            failureCount: getStoredFailureCount(), // 从localStorage读取累计失败次数
+            tabSwitchCount: 0, // 当前游戏的切屏次数
+            lastTabSwitchTime: null
+        };
+
+        // 检查手机
+        function checkPhone() {
+            hideAllSections();
+            document.getElementById('phone-investigation').classList.remove('hidden');
+            gameState.currentLocation = 'phone';
+        }
+
+        // 检查照片
+        function checkPhotos() {
+            hideAllSections();
+            document.getElementById('photo-investigation').classList.remove('hidden');
+            gameState.currentLocation = 'photos';
+            gameState.hasPhotoClue = true;
+            gameState.libraryFloor = 3;
+            updateInitialInterface();
+        }
+
+        // 检查书桌
+        function checkDesk() {
+            showModal('书桌抽屉', `
+                <div class="space-y-4">
+                    <p>你在书桌抽屉里发现了一本实验记录本和一张纸条。</p>
+                    
+                    <div class="bg-gray-800 bg-opacity-50 rounded-lg p-4">
+                        <h4 class="text-lg font-bold text-white mb-3">实验记录本</h4>
+                        <div class="bg-black bg-opacity-50 p-3 rounded text-sm">
+                            <p class="text-gray-300 mb-2">记录本上有一串编码：</p>
+                            <p class="text-green-400 font-mono text-lg mb-3">A1-B2-C3-D4-E5-F6-G7-??</p>
+                        </div>
+                    </div>
+                    
+                </div>
+            `);
+            gameState.hasDeskClue = true;
+            gameState.wardrobeCode = 'H8';
+            updateInitialInterface();
+        }
+
+        // 检查房间
+        function checkRoom() {
+            showModal('房间搜查', `
+                <div class="space-y-4">
+                    <p>你仔细检查了整个房间，在床底下发现了一个隐藏的文件夹。</p>
+                    
+                    <div class="bg-gray-800 bg-opacity-50 rounded-lg p-4">
+                        <h4 class="text-lg font-bold text-white mb-3">隐藏文件夹</h4>
+                        <div class="bg-black bg-opacity-50 p-3 rounded text-sm">
+                            <p class="text-gray-300 mb-3">文件夹里有一张成绩单，记录着学长这次月考的年级排名：</p>
+                            <div class="space-y-2 mb-3">
+                                <p class="text-white">语文：年级第9</p>
+                                <p class="text-white">数学：年级第2</p>
+                                <p class="text-white">英语：年级第1</p>
+                                <p class="text-white">科学：年级第5</p>
+                            </div>
+                            <div class="bg-red-900 bg-opacity-30 border border-red-500 rounded p-2 mb-4">
+                                <p class="text-red-300 text-xs mb-1">校长盖章：</p>
+                                <p class="text-red-200 font-mono text-sm">HUODEER</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <input type="text" id="room-password" maxlength="10" class="password-input px-3 py-2 rounded text-center text-sm font-mono flex-1" placeholder="输入密码">
+                            </div>
+                            <p id="room-password-hint" class="text-gray-400 text-xs mt-2"></p>
+                            <button onclick="checkRoomPassword()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm mt-2 w-full">
+                                验证
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `);
+        }
+
+        // 检查房间密码
+        function checkRoomPassword() {
+            const passwordInput = document.getElementById('room-password');
+            const password = passwordInput.value.trim();
+            const passwordHint = document.getElementById('room-password-hint');
+            
+            // 密码是9215（语文9，数学2，英语1，科学5）
+            if (password === '9215') {
+                gameState.hasRoomClue = true;
+                passwordHint.textContent = '正确！';
+                passwordHint.classList.add('text-green-400');
+                passwordInput.classList.add('border-green-500');
+                showNotification('获得房间线索');
+                updateInitialInterface();
+            } else if (password.length > 0) {
+                passwordHint.textContent = '答案错误';
+                passwordHint.classList.add('text-red-400');
+                passwordInput.classList.add('border-red-500');
+                setTimeout(() => {
+                    passwordInput.classList.remove('border-red-500');
+                    passwordHint.classList.remove('text-red-400');
+                }, 2000);
+            } else {
+                passwordHint.textContent = '请输入密码';
+                passwordHint.classList.add('text-yellow-400');
+            }
+        }
+
+        
+        // 更新初始界面（显示前往715宿舍按钮）
+        function updateInitialInterface() {
+            // 需要完成房间搜索（找到文件夹并输入密码）才能前往715宿舍
+            if (gameState.hasRoomClue) {
+                document.getElementById('go-to-dormitory-section').classList.remove('hidden');
+            }
+            // 更新网站按钮状态
+            updateWebsiteButton();
+        }
+        
+        // 更新网站按钮状态
+        function updateWebsiteButton() {
+            const websiteBtn = document.getElementById('website-btn');
+            const websiteHint = document.getElementById('website-btn-hint');
+            if (websiteBtn && websiteHint) {
+                if (!gameState.hasDecryptedFiles) {
+                    websiteBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    websiteHint.classList.remove('hidden');
+                } else {
+                    websiteBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    websiteHint.classList.add('hidden');
+                }
+            }
+        }
+        
+        // 前往715宿舍
+        function goToDormitory() {
+            hideAllSections();
+            document.getElementById('dormitory-building').classList.remove('hidden');
+            gameState.currentLocation = 'building';
+        }
+
+        // 检查密码
+        function checkPassword() {
+            const passwordInput = document.getElementById('lock-password');
+            const password = passwordInput.value;
+            const passwordHint = document.getElementById('password-hint');
+            
+            if (password === '7158') {
+                gameState.hasLockerKey = true;
+                hideAllSections();
+                document.getElementById('locker-investigation').classList.remove('hidden');
+                gameState.currentLocation = 'locker';
+                showNotification('密码正确！柜子打开了');
+                updateLockerInterface();
+            } else if (password.length === 4) {
+                passwordHint.textContent = '密码错误，请重新尝试';
+                passwordHint.classList.add('text-red-400');
+                passwordInput.classList.add('border-red-500');
+                setTimeout(() => {
+                    passwordInput.classList.remove('border-red-500');
+                    passwordHint.classList.remove('text-red-400');
+                }, 2000);
+            } else {
+                passwordHint.textContent = '请输入4位数字密码';
+                passwordHint.classList.add('text-yellow-400');
+            }
+        }
+
+        // 检查神秘纸条
+        function checkMysteriousNote() {
+            showModal('神秘纸条', `
+                <div class="text-center">
+                    <img src="resources/mysterious_note.jpg" alt="神秘纸条" class="w-full max-w-md mx-auto rounded-lg mb-4">
+                    <div class="mystery-note">
+                        <p class="text-lg font-bold mb-2">手写内容：</p>
+                        <p class="text-2xl font-mono mb-4">7158 / 324 / B-7 / ALPHA</p>
+                    </div>
+                    <div class="mt-4">
+                        <button onclick="readNoteComplete()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg">
+                            <i class="fas fa-check mr-2"></i>
+                            已阅读
+                        </button>
+                    </div>
+                </div>
+            `);
+        }
+        
+        // 完成阅读纸条
+        function readNoteComplete() {
+            gameState.hasReadNote = true;
+            closeModal();
+            updateLockerInterface();
+            showNotification('已阅读纸条');
+        }
+        
+        // 更新柜子界面
+        function updateLockerInterface() {
+            const description = document.getElementById('locker-description');
+            const encryptedBtn = document.getElementById('encrypted-files-btn');
+            const audioBtn = document.getElementById('audio-tape-btn');
+            const basementBtn = document.getElementById('basement-plan-btn');
+            const websiteBtn = document.getElementById('website-btn');
+            
+            if (gameState.hasReadNote && !gameState.hasFoundUSB) {
+                description.textContent = '柜子里有一张纸条...';
+            }
+            
+            if (gameState.hasFoundUSB) {
+                description.textContent = '柜子里有纸条和U盘...';
+                encryptedBtn.classList.remove('hidden', 'opacity-50', 'cursor-not-allowed');
+                encryptedBtn.removeAttribute('disabled');
+            }
+            
+            if (gameState.hasDecryptedFiles) {
+                description.textContent = '柜子里有纸条、U盘（已解密，包含录音文件）...';
+                audioBtn.classList.remove('hidden', 'opacity-50', 'cursor-not-allowed');
+                audioBtn.removeAttribute('disabled');
+            }
+            
+            if (gameState.hasDecodedAudio) {
+                description.textContent = '柜子里有纸条、U盘（录音文件已解码）...';
+            }
+            
+            if (gameState.hasFoundBasementPlan) {
+                basementBtn.classList.remove('hidden', 'opacity-50', 'cursor-not-allowed');
+                basementBtn.removeAttribute('disabled');
+                description.textContent = '柜子里有纸条、U盘（录音文件已解码）、地下室平面图...';
+            }
+            
+            if (gameState.hasSolvedBasement) {
+                description.textContent = '路径已确认，可以前往B-7房间了...';
+            }
+        }
+
+        // 检查加密文件
+        function checkEncryptedFiles() {
+            if (!gameState.hasFoundUSB) {
+                showNotification('需要先去图书馆找到U盘');
+                return;
+            }
+            
+            if (!gameState.hasDecryptedFiles) {
+            showModal('加密文件', `
+                <div class="encrypted-file">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-lock text-4xl text-purple-400 mb-3"></i>
+                        <h3 class="text-xl font-bold">加密U盘</h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="bg-black bg-opacity-50 p-3 rounded">
+                                <p class="text-sm text-gray-400">U盘内容：</p>
+                            <ul class="text-sm mt-2 space-y-1">
+                                    <li>• audio_recording.enc - 录音文件（加密）</li>
+                                    <li>• 需要完成拼图解密才能查看</li>
+                            </ul>
+                        </div>
+                            <div class="bg-gray-800 bg-opacity-50 p-3 rounded mb-4">
+                                <p class="text-gray-300 text-sm mb-3">
+                                    <i class="fas fa-lock mr-2"></i>
+                                    U盘被加密保护，需要完成拼图才能访问文件。
+                                </p>
+                        </div>
+                            <div class="bg-gray-900 bg-opacity-50 p-4 rounded">
+                                <h4 class="text-lg font-bold text-white mb-3">拼图游戏</h4>
+                                <div id="puzzle-container" class="grid grid-cols-5 gap-2 mb-4">
+                                    <!-- 拼图碎片将在这里动态生成 -->
+                                </div>
+                                <div class="flex items-center space-x-4 mb-3">
+                                    <input type="text" id="file-password" maxlength="20" class="password-input px-4 py-2 rounded-lg text-center text-lg font-mono w-full" placeholder="输入拼图显示的密码...">
+                                </div>
+                                <p id="file-password-hint" class="text-gray-400 text-sm"></p>
+                                <button onclick="decryptFiles()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors w-full mt-3">
+                                    <i class="fas fa-unlock mr-2"></i>
+                                    解密文件
+                                </button>
+                            </div>
+                    </div>
+                </div>
+            `);
+                initPuzzle();
+            } else {
+                showDecryptedFiles();
+            }
+        }
+        
+        // 初始化拼图
+        function initPuzzle() {
+            const container = document.getElementById('puzzle-container');
+            if (!container) return;
+            
+            // 拼图显示密码：324B7ALPHA
+            const puzzlePieces = ['3', '2', '4', 'B', '7', 'A', 'L', 'P', 'H', 'A'];
+            const shuffled = [...puzzlePieces].sort(() => Math.random() - 0.5);
+            
+            container.innerHTML = '';
+            shuffled.forEach((char, index) => {
+                const piece = document.createElement('div');
+                piece.className = 'bg-purple-600 text-white text-xl font-bold p-3 rounded cursor-move text-center touch-none select-none';
+                piece.textContent = char;
+                piece.draggable = true;
+                piece.dataset.value = char;
+                piece.dataset.index = index;
+                // 桌面端拖拽事件
+                piece.addEventListener('dragstart', handleDragStart);
+                piece.addEventListener('dragover', handleDragOver);
+                piece.addEventListener('drop', handleDrop);
+                piece.addEventListener('dragend', handleDragEnd);
+                // 移动端触摸事件
+                piece.addEventListener('touchstart', handleTouchStart, { passive: false });
+                piece.addEventListener('touchmove', handleTouchMove, { passive: false });
+                piece.addEventListener('touchend', handleTouchEnd, { passive: false });
+                container.appendChild(piece);
+            });
+        }
+        
+        let draggedElement = null;
+        let touchStartElement = null;
+        let touchStartY = null;
+        let touchStartX = null;
+        let lastHighlightedElement = null;
+        
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.style.opacity = '0.5';
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            if (this !== draggedElement) {
+                swapPuzzlePieces(this, draggedElement);
+            }
+        }
+        
+        function handleDragEnd(e) {
+            this.style.opacity = '1';
+            draggedElement = null;
+            checkPuzzleOrder();
+        }
+        
+        // 移动端触摸事件处理
+        function handleTouchStart(e) {
+            e.preventDefault();
+            touchStartElement = this;
+            touchStartY = e.touches[0].clientY;
+            touchStartX = e.touches[0].clientX;
+            this.style.opacity = '0.5';
+            this.style.transform = 'scale(1.1)';
+            this.style.transition = 'transform 0.1s';
+        }
+        
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (!touchStartElement) return;
+            
+            const touch = e.touches[0];
+            const deltaY = touch.clientY - touchStartY;
+            const deltaX = touch.clientX - touchStartX;
+            
+            // 移动元素跟随手指
+            touchStartElement.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1.1)`;
+            touchStartElement.style.zIndex = '1000';
+            touchStartElement.style.pointerEvents = 'none';
+            
+            // 重置之前高亮的元素
+            if (lastHighlightedElement && lastHighlightedElement !== touchStartElement) {
+                lastHighlightedElement.style.backgroundColor = '';
+            }
+            
+            // 临时隐藏拖拽元素以便检测下面的元素
+            touchStartElement.style.visibility = 'hidden';
+            const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            touchStartElement.style.visibility = 'visible';
+            
+            // 检测是否移动到其他拼图块上方
+            if (elementBelow && elementBelow !== touchStartElement) {
+                const container = document.getElementById('puzzle-container');
+                if (container && container.contains(elementBelow) && 
+                    elementBelow.classList.contains('bg-purple-600')) {
+                    elementBelow.style.backgroundColor = 'rgba(147, 51, 234, 0.7)';
+                    lastHighlightedElement = elementBelow;
+                } else {
+                    lastHighlightedElement = null;
+                }
+            } else {
+                lastHighlightedElement = null;
+            }
+        }
+        
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            if (!touchStartElement) return;
+            
+            // 先临时隐藏拖拽元素以便检测下面的元素
+            touchStartElement.style.visibility = 'hidden';
+            const touch = e.changedTouches[0];
+            const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            touchStartElement.style.visibility = 'visible';
+            
+            // 重置样式
+            touchStartElement.style.opacity = '1';
+            touchStartElement.style.transform = '';
+            touchStartElement.style.transition = '';
+            touchStartElement.style.zIndex = '';
+            touchStartElement.style.pointerEvents = '';
+            touchStartElement.style.visibility = 'visible';
+            
+            // 优先使用最后高亮的元素，如果没有则使用elementFromPoint检测的结果
+            let targetElement = lastHighlightedElement;
+            if (!targetElement && elementBelow && elementBelow !== touchStartElement && 
+                elementBelow.classList.contains('bg-purple-600')) {
+                targetElement = elementBelow;
+            }
+            
+            // 如果找到目标元素，交换位置
+            if (targetElement && targetElement !== touchStartElement) {
+                targetElement.style.backgroundColor = '';
+                swapPuzzlePieces(targetElement, touchStartElement);
+            } else {
+                // 重置所有拼图块背景色
+                const container = document.getElementById('puzzle-container');
+                if (container) {
+                    Array.from(container.children).forEach(piece => {
+                        if (piece !== touchStartElement) {
+                            piece.style.backgroundColor = '';
+                        }
+                    });
+                }
+            }
+            
+            touchStartElement = null;
+            touchStartY = null;
+            touchStartX = null;
+            lastHighlightedElement = null;
+            checkPuzzleOrder();
+        }
+        
+        // 交换拼图块的通用函数
+        function swapPuzzlePieces(piece1, piece2) {
+            const temp = piece1.textContent;
+            piece1.textContent = piece2.textContent;
+            piece2.textContent = temp;
+            
+            const tempValue = piece1.dataset.value;
+            piece1.dataset.value = piece2.dataset.value;
+            piece2.dataset.value = tempValue;
+        }
+        
+        function checkPuzzleOrder() {
+            const container = document.getElementById('puzzle-container');
+            if (!container) return;
+            
+            const pieces = Array.from(container.children);
+            const currentOrder = pieces.map(p => p.dataset.value).join('');
+            const correctOrder = '324B7ALPHA';
+            
+            if (currentOrder === correctOrder) {
+                const passwordInput = document.getElementById('file-password');
+                if (passwordInput) {
+                    passwordInput.value = '324B7ALPHA';
+                    passwordInput.classList.add('border-green-500');
+                    setTimeout(() => {
+                        passwordInput.classList.remove('border-green-500');
+                    }, 2000);
+                }
+            }
+        }
+        
+        // 解密文件
+        function decryptFiles() {
+            const passwordInput = document.getElementById('file-password');
+            const password = passwordInput.value.trim();
+            const passwordHint = document.getElementById('file-password-hint');
+            
+            // 密码：324B7ALPHA (从拼图中获得)
+            if (password === '324B7ALPHA' || password === '324b7alpha') {
+                gameState.hasDecryptedFiles = true;
+                closeModal();
+                showDecryptedFiles();
+                showNotification('U盘解密成功！获得录音文件');
+                updateLockerInterface();
+            } else if (password.length > 0) {
+                passwordHint.textContent = '密码错误，仔细分析神秘纸条中的数字组合';
+                passwordHint.classList.add('text-red-400');
+                passwordInput.classList.add('border-red-500');
+                setTimeout(() => {
+                    passwordInput.classList.remove('border-red-500');
+                    passwordHint.classList.remove('text-red-400');
+                }, 2000);
+            } else {
+                passwordHint.textContent = '请输入密码';
+                passwordHint.classList.add('text-yellow-400');
+            }
+        }
+        
+        // 显示解密后的文件
+        function showDecryptedFiles() {
+            showModal('解密后的文件', `
+                <div class="space-y-4">
+                    <div class="bg-green-900 bg-opacity-30 border border-green-500 rounded-lg p-4">
+                        <p class="text-green-200">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            文件解密成功！
+                        </p>
+                    </div>
+                    
+                    <div class="bg-gray-800 bg-opacity-50 rounded-lg p-4">
+                        <h4 class="text-lg font-bold text-white mb-3">audio_recording.enc（已解密）</h4>
+                    </div>
+                    
+                </div>
+            `);
+        }
+
+        // 检查录音文件（从U盘中）
+        function checkAudioTape() {
+            if (!gameState.hasDecryptedFiles) {
+                showNotification('需要先解密U盘获得录音文件');
+                return;
+            }
+            
+            if (!gameState.hasDecodedAudio) {
+            showModal('录音文件', `
+                <div class="text-center">
+                    <div class="audio-player">
+                        <h3 class="text-lg font-bold mb-3">录音文件</h3>
+                            
+                            <div class="bg-gray-800 bg-opacity-50 rounded-lg p-4 mt-4">
+                                <div class="bg-black bg-opacity-70 p-3 rounded font-mono text-sm text-green-400 mb-3">
+                                    <p class="mb-1">-.. ..</p>
+                                    <p class="mb-1">-..- .. .-</p>
+                                    <p class="mb-1">... .... ..</p>
+                                    <p class="mb-1">-...</p>
+                                    <p class="mb-1">.----</p>
+                                </div>
+                                <div class="flex items-center space-x-2 mb-3">
+                                    <input type="text" id="audio-decode" maxlength="50" class="password-input px-4 py-2 rounded-lg text-center text-sm font-mono flex-1" placeholder="输入解码后的位置...">
+                                </div>
+                                <p id="audio-decode-hint" class="text-gray-400 text-xs mb-3"></p>
+                                <button onclick="decodeAudio()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded w-full">
+                                    <i class="fas fa-unlock mr-2"></i>
+                                    解码录音
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `);
+            } else {
+                showLocationFromAudio();
+            }
+        }
+
+        // 解码录音
+        function decodeAudio() {
+            const decodeInput = document.getElementById('audio-decode');
+            const decoded = decodeInput.value.trim().toUpperCase();
+            const decodeHint = document.getElementById('audio-decode-hint');
+            
+            // 摩斯密码解码：DIXIASHIB1
+            // 正确答案：DIXIASHIB1
+            const correctAnswers = ['DIXIASHIB1'];
+            
+            if (correctAnswers.includes(decoded)) {
+                gameState.hasDecodedAudio = true;
+                closeModal();
+                showLocationFromAudio();
+                showNotification('录音解码成功！发现位置：实验楼地下室B-1');
+                updateLockerInterface();
+            } else if (decoded.length > 0) {
+                decodeHint.textContent = '解码错误，仔细检查对应关系';
+                decodeHint.classList.add('text-red-400');
+                decodeInput.classList.add('border-red-500');
+                setTimeout(() => {
+                    decodeInput.classList.remove('border-red-500');
+                    decodeHint.classList.remove('text-red-400');
+                }, 2000);
+            } else {
+                decodeHint.textContent = '请输入解码后的位置';
+                decodeHint.classList.add('text-yellow-400');
+            }
+        }
+        
+        // 显示从录音中获取的位置信息
+        function showLocationFromAudio() {
+            showModal('录音解码结果', `
+                <div class="space-y-4">
+                    <div class="bg-green-900 bg-opacity-30 border border-green-500 rounded-lg p-4">
+                        <p class="text-green-200">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            录音解码成功！
+                            </p>
+                        </div>
+                    
+                    <div class="bg-gray-800 bg-opacity-50 rounded-lg p-4">
+                        <h4 class="text-lg font-bold text-white mb-3">解码内容</h4>
+                        <div class="bg-black bg-opacity-50 p-3 rounded text-sm">
+                            <p class="text-gray-300 mb-2">录音中提到了一个位置：</p>
+                            <p class="text-yellow-300 font-mono text-lg mb-2">实验楼地下室 B-1</p>
+                            <p class="text-gray-400 mb-2">根据这个线索，你决定前往实验楼地下室B-1房间寻找更多信息...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button onclick="findBasementPlan()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg w-full">
+                            <i class="fas fa-map mr-2"></i>
+                            前往B-1房间寻找地图
+                        </button>
+                    </div>
+                </div>
+            `);
+        }
+        
+        // 前往B-1房间寻找地图
+        function findBasementPlan() {
+            closeModal();
+            gameState.hasFoundBasementPlan = true;
+            showNotification('在B-1房间找到了地下室平面图！');
+            updateLockerInterface();
+        }
+
+
+        // BGM管理
+        let bgm3Audio = null;
+        let bgm1Audio = null;
+        let isBasementBGMPlaying = false;
+        
+        // 初始化BGM
+        function initBGM() {
+            bgm3Audio = document.getElementById('bgm3');
+            bgm1Audio = document.getElementById('bgm1');
+            
+            // 设置音量
+            if (bgm3Audio) {
+                bgm3Audio.volume = 0.5;
+            }
+            if (bgm1Audio) {
+                bgm1Audio.volume = 0.5;
+            }
+            
+            // 开始播放BGM3
+            if (bgm3Audio) {
+                bgm3Audio.play().catch(e => {
+                    console.log('BGM播放需要用户交互');
+                });
+            }
+        }
+        
+        // 切换到地下室BGM
+        function switchToBasementBGM() {
+            if (isBasementBGMPlaying) return;
+            isBasementBGMPlaying = true;
+            
+            if (!bgm3Audio || !bgm1Audio) {
+                bgm3Audio = document.getElementById('bgm3');
+                bgm1Audio = document.getElementById('bgm1');
+            }
+            
+            // BGM3渐淡
+            if (bgm3Audio) {
+                const fadeOutInterval = setInterval(() => {
+                    if (bgm3Audio.volume > 0.05) {
+                        bgm3Audio.volume -= 0.05;
+                    } else {
+                        bgm3Audio.volume = 0;
+                        bgm3Audio.pause();
+                        clearInterval(fadeOutInterval);
+                        
+                        // 开始播放BGM1
+                        if (bgm1Audio) {
+                            bgm1Audio.volume = 0;
+                            bgm1Audio.play().catch(e => {
+                                console.log('BGM1播放失败');
+                            });
+                            
+                            // BGM1渐入
+                            const fadeInInterval = setInterval(() => {
+                                if (bgm1Audio.volume < 0.5) {
+                                    bgm1Audio.volume += 0.05;
+                                } else {
+                                    bgm1Audio.volume = 0.5;
+                                    clearInterval(fadeInInterval);
+                                }
+                            }, 100);
+                        }
+                    }
+                }, 100);
+            }
+        }
+        
+        // 切换回BGM3（离开地下室时）
+        function switchBackToBGM3() {
+            if (!isBasementBGMPlaying) return;
+            
+            // 如果已经在后续关卡（B-7房间或已完成地下室解谜），不切换回BGM3
+            if (gameState.currentLocation === 'b7' || gameState.hasSolvedBasement) {
+                return;
+            }
+            
+            isBasementBGMPlaying = false;
+            
+            if (!bgm3Audio || !bgm1Audio) {
+                bgm3Audio = document.getElementById('bgm3');
+                bgm1Audio = document.getElementById('bgm1');
+            }
+            
+            // BGM1渐淡
+            if (bgm1Audio) {
+                const fadeOutInterval = setInterval(() => {
+                    if (bgm1Audio.volume > 0.05) {
+                        bgm1Audio.volume -= 0.05;
+                    } else {
+                        bgm1Audio.volume = 0;
+                        bgm1Audio.pause();
+                        clearInterval(fadeOutInterval);
+                        
+                        // 开始播放BGM3
+                        if (bgm3Audio) {
+                            bgm3Audio.volume = 0;
+                            bgm3Audio.play().catch(e => {
+                                console.log('BGM3播放失败');
+                            });
+                            
+                            // BGM3渐入
+                            const fadeInInterval = setInterval(() => {
+                                if (bgm3Audio.volume < 0.5) {
+                                    bgm3Audio.volume += 0.05;
+                                } else {
+                                    bgm3Audio.volume = 0.5;
+                                    clearInterval(fadeInInterval);
+                                }
+                            }, 100);
+                        }
+                    }
+                }, 100);
+            }
+        }
+        
+        // 检查是否应该播放地下室BGM
+        function shouldPlayBasementBGM() {
+            // 如果在B-7房间或已完成地下室解谜，应该播放BGM1
+            return gameState.currentLocation === 'b7' || gameState.hasSolvedBasement;
+        }
+        
+        // 检查地下室平面图
+        function checkBasementPlan() {
+            if (!gameState.hasFoundBasementPlan) {
+                showNotification('需要先解码录音文件找到位置，然后前往B-1房间获得地图');
+                return;
+            }
+            
+            // 进入地下室时切换BGM
+            if (!isBasementBGMPlaying) {
+                switchToBasementBGM();
+            }
+            
+            // 重置起始位置
+            if (!gameState.hasSolvedBasement) {
+                gameState.currentBasementRoom = 'B-1';
+            }
+            
+            if (!gameState.hasSolvedBasement) {
+            showModal('地下室平面图', `
+                <div class="text-center">
+                    <img src="resources/basement_plan.jpg" alt="地下室平面图" class="w-full max-w-lg mx-auto rounded-lg mb-4">
+                    <div class="document-viewer">
+                        <h3 class="text-lg font-bold mb-3">实验楼地下室布局</h3>
+                        <p class="text-gray-300 text-sm mb-4">当前位置：<span id="current-room-display" class="text-yellow-300 font-bold">${gameState.currentBasementRoom}</span></p>
+                        <div id="room-transition" class="hidden mb-4">
+                            <div class="bg-blue-900 bg-opacity-50 rounded-lg p-3">
+                                <p class="text-blue-200 text-sm" id="transition-text"></p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3 text-sm mt-4 mb-4">
+                            <button onclick="selectBasementRoom('B-1')" id="room-B-1" class="bg-black bg-opacity-50 p-4 rounded text-center hover:bg-opacity-70 transition-all">
+                                <div class="text-red-400 font-bold text-lg">B-1</div>
+                                <div class="text-xs text-gray-400">药物储存</div>
+                            </button>
+                            <button onclick="selectBasementRoom('B-2')" id="room-B-2" class="bg-black bg-opacity-50 p-4 rounded text-center hover:bg-opacity-70 transition-all">
+                                <div class="text-red-400 font-bold text-lg">B-2</div>
+                                <div class="text-xs text-gray-400">测试室</div>
+                            </button>
+                            <button onclick="selectBasementRoom('B-3')" id="room-B-3" class="bg-black bg-opacity-50 p-4 rounded text-center hover:bg-opacity-70 transition-all">
+                                <div class="text-red-400 font-bold text-lg">B-3</div>
+                                <div class="text-xs text-gray-400">监控室</div>
+                            </button>
+                            <button onclick="selectBasementRoom('B-4')" id="room-B-4" class="bg-black bg-opacity-50 p-4 rounded text-center hover:bg-opacity-70 transition-all">
+                                <div class="text-red-400 font-bold text-lg">B-4</div>
+                                <div class="text-xs text-gray-400">数据分析</div>
+                            </button>
+                            <button onclick="selectBasementRoom('B-7')" id="room-B-7" class="bg-black bg-opacity-50 p-4 rounded text-center hover:bg-opacity-70 transition-all">
+                                <div class="text-red-400 font-bold text-lg">B-7</div>
+                                <div class="text-xs text-gray-400">关押室</div>
+                            </button>
+                            <button onclick="selectBasementRoom('B-8')" id="room-B-8" class="bg-black bg-opacity-50 p-4 rounded text-center hover:bg-opacity-70 transition-all">
+                                <div class="text-red-400 font-bold text-lg">B-8</div>
+                                <div class="text-xs text-gray-400">档案室</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `);
+            updateBasementRoomDisplay();
+            } else {
+                showBasementSolution();
+            }
+        }
+
+        // 更新地下室房间显示
+        function updateBasementRoomDisplay() {
+            const currentRoomDisplay = document.getElementById('current-room-display');
+            if (currentRoomDisplay) {
+                currentRoomDisplay.textContent = gameState.currentBasementRoom;
+            }
+            
+            // 更新按钮颜色：当前房间用绿色标记
+            const rooms = ['B-1', 'B-2', 'B-3', 'B-4', 'B-7', 'B-8'];
+            rooms.forEach(room => {
+                const roomBtn = document.getElementById(`room-${room}`);
+                if (roomBtn) {
+                    if (room === gameState.currentBasementRoom) {
+                        roomBtn.classList.remove('bg-black', 'bg-opacity-50');
+                        roomBtn.classList.add('bg-green-600', 'bg-opacity-70', 'border-2', 'border-green-400');
+                    } else {
+                        roomBtn.classList.remove('bg-green-600', 'bg-opacity-70', 'border-2', 'border-green-400');
+                        roomBtn.classList.add('bg-black', 'bg-opacity-50');
+                    }
+                }
+            });
+        }
+        
+        // 选择地下室房间
+        function selectBasementRoom(room) {
+            const correctPath = ['B-1', 'B-4', 'B-7'];
+            const currentIndex = correctPath.indexOf(gameState.currentBasementRoom);
+            const nextRoom = correctPath[currentIndex + 1];
+            
+            // 检查是否选择了正确的下一个房间
+            if (room === nextRoom) {
+                // 显示房间切换动画
+                showRoomTransition(gameState.currentBasementRoom, room);
+                
+                // 延迟更新房间状态
+                setTimeout(() => {
+                    gameState.currentBasementRoom = room;
+                    updateBasementRoomDisplay();
+                    
+                    // 如果到达B-7，完成路径
+                    if (room === 'B-7') {
+                        setTimeout(() => {
+                            gameState.hasSolvedBasement = true;
+                            closeModal();
+                            showBasementSolution();
+                            showNotification('路径确认成功！可以访问网站了');
+                            updateLockerInterface();
+                        }, 1500);
+                    }
+                }, 1500);
+            } else if (correctPath.includes(room)) {
+                // 选择了路径中的房间但不是下一个，触发被抓
+                closeModal();
+                triggerCaughtEnding('你走错了房间，被发现了！');
+            } else {
+                // 选择了错误的房间，触发被抓
+                closeModal();
+                triggerCaughtEnding('你进入了错误的房间，被发现了！');
+            }
+        }
+        
+        // 显示房间切换动画
+        function showRoomTransition(fromRoom, toRoom) {
+            const transitionDiv = document.getElementById('room-transition');
+            const transitionText = document.getElementById('transition-text');
+            
+            if (transitionDiv && transitionText) {
+                transitionText.textContent = `从 ${fromRoom} 前往 ${toRoom}...`;
+                transitionDiv.classList.remove('hidden');
+                
+                // 1.5秒后隐藏动画
+                setTimeout(() => {
+                    transitionDiv.classList.add('hidden');
+                }, 1500);
+            }
+        }
+
+        // 显示地下室解决方案
+        function showBasementSolution() {
+            showModal('地下室平面图（已解谜）', `
+                <div class="text-center">
+                    <img src="resources/basement_plan.jpg" alt="地下室平面图" class="w-full max-w-lg mx-auto rounded-lg mb-4">
+                    <div class="document-viewer">
+                        <h3 class="text-lg font-bold mb-3">实验楼地下室布局</h3>
+                        <div class="bg-green-900 bg-opacity-30 border border-green-500 rounded-lg p-4 mb-4">
+                            <p class="text-green-200 text-sm mb-2">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                路径已确认：B-1 → B-4 → B-7
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 text-sm mt-4">
+                            <div class="bg-green-900 bg-opacity-50 p-3 rounded text-center border-2 border-green-400">
+                                <div class="text-green-400 font-bold">B-1</div>
+                                <div class="text-xs text-green-300">起点</div>
+                            </div>
+                            <div class="bg-green-900 bg-opacity-50 p-3 rounded text-center border-2 border-green-400">
+                                <div class="text-green-400 font-bold">B-4</div>
+                                <div class="text-xs text-green-300">中转</div>
+                            </div>
+                            <div class="bg-red-900 bg-opacity-50 p-3 rounded text-center border-2 border-red-400">
+                                <div class="text-red-400 font-bold">B-7</div>
+                                <div class="text-xs text-red-300">目标</div>
+                            </div>
+                        </div>
+                        <p class="text-yellow-300 text-sm mt-4">张昊被关押在B-7房间，这是救援的关键信息！</p>
+                        <div class="mt-4">
+                            <button onclick="enterB7Room()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg w-full">
+                                <i class="fas fa-door-open mr-2"></i>
+                                前往B-7房间
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `);
+        }
+        
+        // 进入B-7房间
+        function enterB7Room() {
+            closeModal();
+            hideAllSections();
+            document.getElementById('b7-room-investigation').classList.remove('hidden');
+            gameState.currentLocation = 'b7';
+            
+            // 确保在B-7房间播放BGM1
+            if (!isBasementBGMPlaying) {
+                switchToBasementBGM();
+            }
+        }
+
+        // 验证网站线索
+        function verifyWebsiteClue() {
+            const clueInput = document.getElementById('website-clue');
+            const clue = clueInput.value.trim().toUpperCase();
+            const clueHint = document.getElementById('website-clue-hint');
+            
+            // 从hiddentruth.html网站获得的线索：2023-MINGDE-HUODEER
+            // 线索提示：去年，这所学校，校长职位变动，新任校长宣布启动这项计划。天时，地利，人，缺一不可。
+            // 天时=2023（去年），地利=MINGDE（这所学校），人=HUODEER（校长名字缩写）
+            const normalizedClue = clue.replace(/-/g, '').toUpperCase();
+            if (normalizedClue === '2023MINGDEHUODEER' || clue === '2023-MINGDE-HUODEER' || clue === '2023MINGDEHUODEER') {
+                gameState.hasWebsitePassword = true;
+                hideAllSections();
+                document.getElementById('website-investigation').classList.remove('hidden');
+                gameState.currentLocation = 'website';
+                showNotification('线索验证成功！正在访问最终网站...');
+            } else if (clue.length > 0) {
+                // 直接显示错误网站的访问按钮，不显示错误提示
+                showWrongPasswordButton();
+            } else {
+                clueHint.textContent = '请输入从网站获得的线索';
+                clueHint.classList.add('text-yellow-400');
+            }
+        }
+
+        // 显示错误密码的访问按钮
+        function showWrongPasswordButton() {
+            const wrongButton = document.getElementById('wrong-password-button');
+            if (wrongButton) {
+                wrongButton.classList.remove('hidden');
+                // 立即启用按钮
+                const link = wrongButton.querySelector('a');
+                if (link) {
+                    link.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+                    link.classList.add('cursor-pointer');
+                    // 添加点击事件，触发游戏结束
+                    link.onclick = function(e) {
+                        e.preventDefault();
+                        // 先触发主界面游戏结束
+                        triggerCaughtEnding('你输入了错误的密码，已被发现！');
+                        // 然后打开错误网站
+                        window.open('caught.html', '_blank');
+                    };
+                }
+            }
+        }
+        
+        // 前往网站（最终网站）
+        function goToWebsite() {
+            if (!gameState.hasWebsitePassword) {
+                showNotification('需要先在B-7房间的电脑上获得网站线索');
+                return;
+            }
+            
+            // 打开完整网站（带参数）
+            window.open('hiddentruth.html?full=1', '_blank');
+        }
+
+        // 计算通关称号
+        function calculateTitle() {
+            const playTime = (Date.now() - gameState.startTime) / 1000 / 60; // 分钟
+            const failureCount = gameState.failureCount;
+            const tabSwitchCount = gameState.tabSwitchCount;
+            
+            // 称号定义（按优先级排序，越靠前优先级越高）
+            const titles = [
+                {
+                    name: '完美侦探',
+                    description: '零失误通关，真正的推理大师',
+                    condition: () => failureCount === 0 && playTime < 30 && tabSwitchCount < 3
+                },
+                {
+                    name: '机智小学弟',
+                    description: '快速通关，思维敏捷',
+                    condition: () => playTime < 25 && failureCount <= 1 && tabSwitchCount < 5
+                },
+                {
+                    name: '终极挑战者',
+                    description: '历经重重困难，终获成功',
+                    condition: () => failureCount >= 8 || (playTime >= 60 && failureCount >= 3)
+                },
+                {
+                    name: '莽撞高中生',
+                    description: '多次失败但坚持不懈',
+                    condition: () => failureCount >= 5 && failureCount < 8 && playTime < 50
+                },
+                {
+                    name: '谨慎调查员',
+                    description: '小心谨慎，步步为营',
+                    condition: () => failureCount === 0 && tabSwitchCount >= 5 && playTime >= 30
+                },
+                {
+                    name: '耐心探索者',
+                    description: '花费大量时间仔细探索',
+                    condition: () => playTime >= 50 && failureCount <= 2
+                },
+                {
+                    name: '不屈斗士',
+                    description: '屡败屡战，最终成功',
+                    condition: () => failureCount >= 3 && failureCount < 5
+                },
+                {
+                    name: '分心玩家',
+                    description: '频繁切换窗口，但依然通关',
+                    condition: () => tabSwitchCount >= 10 && failureCount <= 3
+                },
+                {
+                    name: '稳健学长',
+                    description: '经验丰富，稳扎稳打',
+                    condition: () => failureCount <= 2 && playTime >= 40 && playTime < 60 && tabSwitchCount < 10
+                },
+                {
+                    name: '幸运新手',
+                    description: '第一次尝试就成功',
+                    condition: () => failureCount === 0 && playTime >= 30 && playTime < 50 && tabSwitchCount < 5
+                }
+            ];
+            
+            // 按优先级检查称号
+            for (const title of titles) {
+                if (title.condition()) {
+                    return title;
+                }
+            }
+            
+            // 默认称号
+            return {
+                name: '勇敢调查者',
+                description: '成功揭露真相的勇敢者'
+            };
+        }
+        
+        // 完成游戏
+        function completeGame() {
+            const title = calculateTitle();
+            const playTime = Math.floor((Date.now() - gameState.startTime) / 1000 / 60);
+            const playTimeSeconds = Math.floor((Date.now() - gameState.startTime) / 1000);
+            
+            // 通关后清除失败次数统计（因为已经成功通关）
+            clearGameStats();
+            
+            showModal('', `
+                <div class="text-center">
+                    <!-- 成就徽章 -->
+                    <div class="mb-6">
+                        <div class="inline-block bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 rounded-full p-6 mb-4 shadow-2xl" style="animation: pulse 2s infinite;">
+                            <i class="fas fa-trophy text-6xl text-white"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- 称号显示 -->
+                    <div class="mb-6">
+                        <h2 class="text-4xl font-bold text-yellow-400 mb-2" style="text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);">
+                            ${title.name}
+                        </h2>
+                        <p class="text-xl text-gray-300 mb-4">${title.description}</p>
+                    </div>
+                    
+                    <!-- 统计数据 -->
+                    <div class="bg-gray-800 bg-opacity-50 rounded-lg p-6 mb-6">
+                        <h3 class="text-2xl font-bold text-white mb-4">通关统计</h3>
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div class="bg-gray-900 bg-opacity-50 rounded-lg p-4">
+                                <div class="text-3xl font-bold text-blue-400 mb-2">${playTime}</div>
+                                <div class="text-sm text-gray-400">通关时间（分钟）</div>
+                            </div>
+                            <div class="bg-gray-900 bg-opacity-50 rounded-lg p-4">
+                                <div class="text-3xl font-bold text-red-400 mb-2">${gameState.failureCount}</div>
+                                <div class="text-sm text-gray-400">失败次数</div>
+                            </div>
+                            <div class="bg-gray-900 bg-opacity-50 rounded-lg p-4">
+                                <div class="text-3xl font-bold text-green-400 mb-2">${gameState.tabSwitchCount}</div>
+                                <div class="text-sm text-gray-400">切屏次数</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 真相揭示 -->
+                    <div class="bg-red-900 bg-opacity-30 rounded-lg p-6 mb-6 text-left">
+                        <h3 class="text-xl font-bold text-red-300 mb-4">真相大白</h3>
+                        <ul class="list-disc list-inside space-y-2 text-red-200 text-sm">
+                            <li>张昊学长发现了学校领导的严重违规行为</li>
+                            <li>他试图收集证据并向有关部门举报</li>
+                            <li>学校领导发现了他的行动，将他控制起来</li>
+                            <li>对外谎称他"因家庭原因请假回家"</li>
+                            <li>实际上他被关在实验楼地下室的B-7房间</li>
+                        </ul>
+                        <p class="text-red-200 leading-relaxed mt-4 text-sm">
+                            你的调查揭露了这个阴谋，现在需要立即采取行动救出张昊学长！
+                        </p>
+                    </div>
+                    
+                    <!-- 按钮 -->
+                    <div class="flex space-x-4 justify-center">
+                        <button onclick="restartGame()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-redo mr-2"></i>
+                            重新开始
+                        </button>
+                        <button onclick="closeModal()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors">
+                            <i class="fas fa-check mr-2"></i>
+                            结束游戏
+                        </button>
+                    </div>
+                </div>
+            `);
+        }
+
+        // 重新开始游戏
+        function restartGame() {
+            // 重新开始时不清除失败次数，保持累计
+            location.reload();
+        }
+
+        // 显示照片详情
+        function showPhotoDetail(photoNumber) {
+            const photoSrc = photoNumber === 1 ? 'resources/photo2.jpg' : 'resources/photo1.jpg';
+            const photoDate = photoNumber === 1 ? '2024-03-24 16:45' : '2024-03-21 14:30';
+            const photoLabel = photoNumber === 1 ? '照片 A' : '照片 B';
+            const photoLocation = photoNumber === 1 ? '图书馆前' : '三楼';
+            
+            showModal(`${photoLabel}`, `
+                <img src="${photoSrc}" alt="${photoLabel}" class="w-full max-w-lg mx-auto rounded-lg mb-4">
+                <div class="bg-gray-800 bg-opacity-50 rounded-lg p-4">
+                    <p class="text-white font-bold mb-2">拍摄信息</p>
+                    <p class="text-gray-300 text-sm">拍摄时间：<span class="font-mono">${photoDate}</span></p>
+                    <p class="text-gray-300 text-sm mt-2">地点：${photoLocation}</p>
+                </div>
+            `);
+        }
+
+        // 隐藏所有区域
+        function hideAllSections() {
+            const sections = ['initial-investigation', 'phone-investigation', 'photo-investigation', 'dormitory-building', 'dormitory-investigation', 'locker-investigation', 'library-investigation', 'website-investigation'];
+            sections.forEach(section => {
+                const el = document.getElementById(section);
+                if (el) el.classList.add('hidden');
+            });
+        }
+        
+        // 选择房间
+        function selectRoom(roomNumber) {
+            if (roomNumber === '715') {
+                hideAllSections();
+                document.getElementById('dormitory-investigation').classList.remove('hidden');
+                gameState.currentLocation = 'dormitory';
+            } else if (roomNumber === '717') {
+                // 717房间彩蛋
+                trigger717EasterEgg();
+            } else {
+                // 选错房间，触发被抓结局
+                triggerCaughtEnding('你进入了错误的房间，被保安发现了！');
+            }
+        }
+        
+        // 触发被抓结局
+        function triggerCaughtEnding(reason) {
+            // 增加失败次数并保存到localStorage
+            gameState.failureCount++;
+            saveFailureCount(gameState.failureCount);
+            
+            // 创建全屏覆盖层
+            const overlay = document.createElement('div');
+            overlay.className = 'caught-overlay';
+            overlay.innerHTML = `
+                <div class="blood-stream"></div>
+                <h1 class="caught-text">抓到你了！</h1>
+            `;
+            
+            // 添加多个血滴效果
+            for (let i = 0; i < 30; i++) {
+                const drip = document.createElement('div');
+                drip.className = 'blood-drip';
+                drip.style.left = Math.random() * 100 + '%';
+                drip.style.animationDelay = Math.random() * 2.5 + 's';
+                drip.style.animationDuration = (2 + Math.random() * 1.5) + 's';
+                drip.style.width = (4 + Math.random() * 4) + 'px';
+                drip.style.height = (100 + Math.random() * 100) + 'px';
+                overlay.appendChild(drip);
+            }
+            
+            document.body.appendChild(overlay);
+            
+            // 2秒后显示选项
+            setTimeout(() => {
+                // 检查是否有存档
+                const hasSave = hasSaveData();
+                const saveData = hasSave ? JSON.parse(localStorage.getItem('gameSaveData')) : null;
+                
+                // 创建选项按钮容器
+                const buttonContainer = document.createElement('div');
+                buttonContainer.style.cssText = 'position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 10001; display: flex; flex-direction: column; gap: 20px; align-items: center;';
+                
+                if (hasSave && saveData) {
+                    // 显示存档信息
+                    const saveInfo = document.createElement('div');
+                    saveInfo.style.cssText = 'color: #ffffff; text-align: center; margin-bottom: 10px; text-shadow: 0 0 10px rgba(255,255,255,0.5);';
+                    saveInfo.innerHTML = `
+                        <p style="font-size: 1.2rem; margin-bottom: 5px;">存档点：${saveData.checkpointName}</p>
+                        <p style="font-size: 0.9rem; opacity: 0.8;">保存时间：${saveData.saveTime}</p>
+                    `;
+                    buttonContainer.appendChild(saveInfo);
+                    
+                    // 从存档点继续按钮
+                    const continueButton = document.createElement('button');
+                    continueButton.textContent = '从存档点继续';
+                    continueButton.style.cssText = 'background: #10b981; color: white; padding: 15px 40px; border: none; border-radius: 8px; font-size: 1.2rem; cursor: pointer; transition: all 0.3s; font-weight: bold;';
+                    continueButton.onmouseover = () => continueButton.style.background = '#059669';
+                    continueButton.onmouseout = () => continueButton.style.background = '#10b981';
+                    continueButton.onclick = () => {
+                        document.body.removeChild(overlay);
+                        loadGameState();
+                    };
+                    buttonContainer.appendChild(continueButton);
+                }
+                
+                // 重新开始按钮
+                const restartButton = document.createElement('button');
+                restartButton.textContent = hasSave ? '重新开始游戏' : '返回主菜单';
+                restartButton.style.cssText = 'background: #6b7280; color: white; padding: 15px 40px; border: none; border-radius: 8px; font-size: 1.2rem; cursor: pointer; transition: all 0.3s; font-weight: bold;';
+                restartButton.onmouseover = () => restartButton.style.background = '#4b5563';
+                restartButton.onmouseout = () => restartButton.style.background = '#6b7280';
+                restartButton.onclick = () => {
+                    if (hasSave) {
+                        if (confirm('确定要重新开始吗？这将清除当前存档。')) {
+                            clearSaveData();
+                            window.location.href = 'index.html';
+                        }
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                };
+                buttonContainer.appendChild(restartButton);
+                
+                overlay.appendChild(buttonContainer);
+            }, 2000);
+        }
+        
+        // 717房间彩蛋
+        function trigger717EasterEgg() {
+            // 停止当前BGM
+            const bgm3 = document.getElementById('bgm3');
+            const bgm1 = document.getElementById('bgm1');
+            if (bgm3) bgm3.pause();
+            if (bgm1) bgm1.pause();
+            
+            // 创建全屏覆盖层
+            const overlay = document.createElement('div');
+            overlay.className = 'easter-egg-overlay';
+            overlay.innerHTML = `
+                <h1 class="easter-egg-text" id="easter-egg-text">你被带走了</h1>
+            `;
+            
+            document.body.appendChild(overlay);
+            
+            // 第一步：显示"你被带走了"，然后依次删除每个字
+            const textElement = document.getElementById('easter-egg-text');
+            let text = '你被带走了';
+            let index = text.length;
+            
+            // 先显示完整文字1秒
+            setTimeout(() => {
+                // 依次删除每个字（从右到左）
+                const deleteInterval = setInterval(() => {
+                    if (index > 0) {
+                        index--;
+                        text = text.substring(0, index);
+                        textElement.textContent = text;
+                    } else {
+                        clearInterval(deleteInterval);
+                        
+                        // 第二步：显示"带你走的是0717号星际执行官"
+                        setTimeout(() => {
+                            textElement.textContent = '带你走的是0717号星际执行官';
+                            
+                            // 第三步：显示图片和播放音频
+                            setTimeout(() => {
+                                overlay.innerHTML = `
+                                    <h1 class="easter-egg-text">带你走的是0717号星际执行官</h1>
+                                    <img src="xuezhiqian.gif" alt="薛之谦" class="easter-egg-image" id="easter-egg-image">
+                                `;
+                                
+                                // 播放音频（从1分17秒开始，即77秒）
+                                const audio = document.getElementById('xuezhiqian-audio');
+                                if (audio) {
+                                    audio.currentTime = 77; // 1分17秒 = 77秒
+                                    audio.play().catch(e => {
+                                        console.log('音频播放失败:', e);
+                                    });
+                                }
+                            }, 1000);
+                        }, 500);
+                    }
+                }, 200); // 每200ms删除一个字
+            }, 1000);
+        }
+        
+        // 返回宿舍楼
+        function goBackToBuilding() {
+            hideAllSections();
+            document.getElementById('dormitory-building').classList.remove('hidden');
+            gameState.currentLocation = 'building';
+            
+            // 如果不在后续关卡，切换回BGM3
+            if (!shouldPlayBasementBGM()) {
+                switchBackToBGM3();
+            }
+        }
+
+        // 返回初始界面
+        function goBack() {
+            hideAllSections();
+            document.getElementById('initial-investigation').classList.remove('hidden');
+            gameState.currentLocation = 'initial';
+            updateInitialInterface();
+            
+            // 如果不在后续关卡，切换回BGM3
+            if (!shouldPlayBasementBGM()) {
+                switchBackToBGM3();
+            }
+        }
+
+        // 返回宿舍
+        function goBackToDormitory() {
+            hideAllSections();
+            document.getElementById('dormitory-investigation').classList.remove('hidden');
+            gameState.currentLocation = 'dormitory';
+            
+            // 如果不在后续关卡，切换回BGM3
+            if (!shouldPlayBasementBGM()) {
+                switchBackToBGM3();
+            }
+        }
+
+        // 返回柜子
+        function goBackToLocker() {
+            hideAllSections();
+            document.getElementById('locker-investigation').classList.remove('hidden');
+            gameState.currentLocation = 'locker';
+            updateLockerInterface();
+            
+            // 如果不在后续关卡，切换回BGM3
+            if (!shouldPlayBasementBGM()) {
+                switchBackToBGM3();
+            }
+        }
+        
+        // 前往图书馆
+        function goToLibrary() {
+            if (!gameState.hasReadNote) {
+                showNotification('需要先查看纸条获得线索');
+                return;
+            }
+            
+            // 显示潜入提示
+            showModal('潜入图书馆', `
+                <div class="space-y-4">
+                    <div class="bg-red-900 bg-opacity-30 border border-red-500 rounded-lg p-4">
+                        <p class="text-red-200 text-sm mb-2">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            <strong>警告：</strong>图书馆有管理员老师在巡逻，需要小心潜入。
+                        </p>
+                        <p class="text-red-200 text-xs">
+                            根据照片线索，你需要前往正确的楼层。选错楼层可能会被发现！
+                        </p>
+                    </div>
+                    
+                    <div class="bg-gray-800 bg-opacity-50 rounded-lg p-4">
+                        <h4 class="text-lg font-bold text-white mb-3">选择要前往的楼层</h4>
+                        <div class="grid grid-cols-3 gap-3">
+                            <button onclick="selectLibraryFloor(1)" class="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg transition-colors">
+                                <div class="font-bold">1楼</div>
+                            </button>
+                            <button onclick="selectLibraryFloor(2)" class="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg transition-colors">
+                                <div class="font-bold">2楼</div>
+                            </button>
+                            <button onclick="selectLibraryFloor(3)" class="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg transition-colors">
+                                <div class="font-bold">3楼</div>
+                            </button>
+                            <button onclick="selectLibraryFloor(4)" class="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg transition-colors">
+                                <div class="font-bold">4楼</div>
+                            </button>
+                            <button onclick="selectLibraryFloor(5)" class="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg transition-colors">
+                                <div class="font-bold">5楼</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `);
+        }
+        
+        // 选择图书馆楼层
+        function selectLibraryFloor(floor) {
+            if (floor === gameState.libraryFloor) {
+                closeModal();
+                showLockerSelection();
+            } else {
+                closeModal();
+                triggerCaughtEnding('你选择了错误的楼层，被图书馆管理员发现了！');
+            }
+        }
+        
+        // 显示储物柜选择界面
+        function showLockerSelection() {
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const numbers = Array.from({length: 26}, (_, i) => i + 1);
+            
+            let lockerGrid = '<div class="grid grid-cols-6 gap-2 mb-4 max-h-96 overflow-y-auto">';
+            for (let i = 0; i < letters.length; i++) {
+                for (let j = 0; j < numbers.length; j++) {
+                    const lockerCode = letters[i] + numbers[j];
+                    lockerGrid += `<button onclick="selectLocker('${lockerCode}')" class="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded text-sm transition-colors">
+                        <div class="font-bold">${lockerCode}</div>
+                    </button>`;
+                }
+            }
+            lockerGrid += '</div>';
+            
+            showModal('选择储物柜', `
+                <div class="space-y-4">
+                    <p class="text-gray-300">你来到了图书馆3楼，找到了储物柜区域。选择一个储物柜：</p>
+                    ${lockerGrid}
+                </div>
+            `);
+        }
+        
+        // 选择储物柜
+        function selectLocker(lockerCode) {
+            if (lockerCode === 'H8') {
+                closeModal();
+                hideAllSections();
+                document.getElementById('library-investigation').classList.remove('hidden');
+                gameState.currentLocation = 'library';
+            } else {
+                closeModal();
+                triggerCaughtEnding('你选择了错误的储物柜，被图书馆管理员发现了！');
+            }
+        }
+        
+        // 显示凯撒密码额外提示
+        function showCaesarHint() {
+            const extraHint = document.getElementById('caesar-extra-hint');
+            if (extraHint) {
+                extraHint.classList.remove('hidden');
+            }
+        }
+        
+        // 检查凯撒密码
+        function checkCaesarPassword() {
+            const passwordInput = document.getElementById('caesar-password');
+            const password = passwordInput.value.trim().toUpperCase();
+            const passwordHint = document.getElementById('caesar-password-hint');
+            
+            // KHUR 偏移3位（向后） = HERO
+            // 凯撒密码：K-3=H, H-3=E, U-3=R, R-3=O
+            // HERO 向后偏移3位（加密） = KHUR
+            if (password === 'HERO') {
+                gameState.hasFoundUSB = true;
+                closeModal();
+                hideAllSections();
+                document.getElementById('locker-investigation').classList.remove('hidden');
+                gameState.currentLocation = 'locker';
+                updateLockerInterface();
+                showNotification('储物柜打开了！找到了U盘');
+            } else if (password.length > 0) {
+                passwordHint.textContent = '密码错误，仔细解码凯撒密码';
+                passwordHint.classList.add('text-red-400');
+                passwordInput.classList.add('border-red-500');
+                setTimeout(() => {
+                    passwordInput.classList.remove('border-red-500');
+                    passwordHint.classList.remove('text-red-400');
+                }, 2000);
+            } else {
+                passwordHint.textContent = '请输入解码后的密码';
+                passwordHint.classList.add('text-yellow-400');
+            }
+        }
+
+        // 显示模态框
+        function showModal(title, content) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-body').innerHTML = content;
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            
+            // 如果关闭地下室平面图模态框且不在后续关卡，切换回BGM3
+            // 检查模态框内容是否包含地下室相关内容
+            const modalBody = document.getElementById('modal-body');
+            if (modalBody && modalBody.innerHTML.includes('地下室平面图') && !shouldPlayBasementBGM()) {
+                switchBackToBGM3();
+            }
+        }
+
+        // 显示帮助
+        function showHelp() {
+            document.getElementById('help-modal').style.display = 'block';
+        }
+
+        // 关闭帮助
+        function closeHelp() {
+            document.getElementById('help-modal').style.display = 'none';
+        }
+
+        // 显示通知
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-24 right-6 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full bg-green-600 text-white`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // 键盘事件
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeHelp();
+            }
+        });
+
+        // 点击模态框外部关闭
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeModal();
+            }
+        });
+
+        document.getElementById('help-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeHelp();
+            }
+        });
+
+        // 追踪切屏次数
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // 页面被隐藏（切屏）
+                const now = Date.now();
+                // 避免短时间内重复计数（比如快速切换）
+                if (!gameState.lastTabSwitchTime || (now - gameState.lastTabSwitchTime) > 1000) {
+                    gameState.tabSwitchCount++;
+                    gameState.lastTabSwitchTime = now;
+                }
+            }
+        });
+        
+        // 密码输入限制
+        document.addEventListener('DOMContentLoaded', () => {
+            // 初始化游戏开始时间
+            gameState.startTime = Date.now();
+            
+            // 初始化BGM
+            initBGM();
+            
+            const passwordInput = document.getElementById('lock-password');
+            if (passwordInput) {
+                passwordInput.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                });
+            }
+            // 初始化界面状态
+            updateInitialInterface();
+            updateWebsiteButton();
+        });
+    </script>
+</body>
+</html>

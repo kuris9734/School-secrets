@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隐藏真相 - 明德中学秘密档案</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+        }
+        
+        .terminal {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+            font-family: 'Courier New', monospace;
+        }
+        
+        .terminal-header {
+            background: #00ff00;
+            color: #000;
+            padding: 0.5rem 1rem;
+            font-weight: bold;
+        }
+        
+        .terminal-content {
+            padding: 1.5rem;
+            min-height: 400px;
+        }
+        
+        .typing-text {
+            overflow: hidden;
+            border-right: 2px solid #00ff00;
+            white-space: nowrap;
+            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #00ff00; }
+        }
+        
+        .glitch {
+            position: relative;
+            color: #00ff00;
+            animation: glitch 2s infinite;
+        }
+        
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+        
+        .secret-document {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+        }
+        
+        .warning-box {
+            background: rgba(255, 69, 0, 0.2);
+            border: 1px solid #ff4500;
+            color: #ff6347;
+        }
+        
+        .file-item {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .file-item:hover {
+            background: rgba(0, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
+        }
+        
+        .access-denied {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            color: #ff6666;
+        }
+        
+        .access-granted {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            color: #66ff66;
+        }
+    </style>
+</head>
+<body>
+    <!-- 警告横幅 -->
+    <div class="warning-box p-4 text-center">
+        <i class="fas fa-exclamation-triangle mr-2"></i>
+        <strong>警告：机密文件 - 仅限授权人员访问</strong>
+        <i class="fas fa-exclamation-triangle ml-2"></i>
+    </div>
+
+    <!-- 主要内容 -->
+    <main class="container mx-auto px-6 py-12">
+        <!-- 终端界面 -->
+        <div class="terminal rounded-lg overflow-hidden mb-8">
+            <div class="terminal-header">
+                <i class="fas fa-terminal mr-2"></i>
+                明德中学机密档案系统 v2.1
+                <span class="float-right">[ROOT ACCESS]</span>
+            </div>
+            <div class="terminal-content">
+                <div class="mb-4">
+                    <div class="typing-text text-green-400">
+                        > 正在访问隐藏数据库...
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="text-green-400">
+                        > 身份验证中...
+                        <span class="glitch">[成功]</span>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="text-green-400">
+                        > 加载机密文件...
+                        <span class="text-yellow-400">[警告：高度敏感信息]</span>
+                    </div>
+                </div>
+                
+                <!-- 第一次访问：只显示密码 -->
+                <div id="password-only" class="hidden">
+                    <div class="bg-red-900 bg-opacity-50 border-2 border-red-500 rounded-lg p-6 mb-6">
+                        <h2 class="text-2xl font-bold mb-4 flex items-center text-red-300">
+                            <i class="fas fa-key mr-3"></i>
+                            最终网站访问线索
+                        </h2>
+                        <div class="bg-black bg-opacity-70 p-4 rounded text-sm text-yellow-300 mb-4">
+                            <p class="text-center leading-relaxed">去年，这所学校，校长职位变动，新任校长宣布启动这项计划。天时，地利，人，缺一不可。</p>
+                        </div>
+                        <p class="text-red-200 text-sm">
+                            这是访问最终隐藏网站的密码线索。请记住这个线索，回到游戏中输入。
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 完整访问：显示所有内容 -->
+                <div id="file-content" class="hidden">
+                    <div class="secret-document rounded-lg p-6 mb-6">
+                        <h2 class="text-2xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-file-alt mr-3"></i>
+                            机密档案
+                        </h2>
+                        
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <h3 class="text-lg font-bold mb-3 text-yellow-400">项目信息</h3>
+                                <ul class="space-y-2 text-sm">
+                                    <li>项目名称：优秀学生强化计划</li>
+                                    <li>项目代码：Project-ALPHA</li>
+                                    <li>启动时间：2024年3月</li>
+                                    <li>实验地点：实验楼地下二层</li>
+                                </ul>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-lg font-bold mb-3 text-yellow-400">实验内容</h3>
+                                <ul class="space-y-2 text-sm">
+                                    <li>• 认知增强测试</li>
+                                    <li>• 记忆强化训练</li>
+                                    <li>• 学习能力提升</li>
+                                    <li>• 心理适应性评估</li>
+                                    <li>• 压力耐受性测试</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="warning-box rounded-lg p-4 mb-4">
+                            <h4 class="font-bold mb-2 flex items-center">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                重要警告
+                            </h4>
+                            <p class="text-sm leading-relaxed">
+                                张昊学生发现了实验真相并试图举报，已被控制。
+                                任何试图泄露实验信息的行为都将受到严厉处理。
+                                项目必须继续，不得有误。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="secret-document rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-user-secret mr-3"></i>
+                            张昊档案
+                        </h3>
+                        
+                        <div class="grid md:grid-cols-3 gap-4 mb-4">
+                            <div class="bg-black bg-opacity-30 p-3 rounded">
+                                <p class="text-sm text-gray-400">学生姓名</p>
+                                <p class="font-bold">张昊</p>
+                            </div>
+                            <div class="bg-black bg-opacity-30 p-3 rounded">
+                                <p class="text-sm text-gray-400">年级</p>
+                                <p class="font-bold">高三</p>
+                            </div>
+                            <div class="bg-black bg-opacity-30 p-3 rounded">
+                                <p class="text-sm text-gray-400">状态</p>
+                                <p class="font-bold text-red-400">被控制</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-red-900 bg-opacity-30 p-4 rounded">
+                            <h4 class="font-bold mb-2 text-red-300">事件记录</h4>
+                            <p class="text-sm text-red-200 leading-relaxed">
+                                该学生发现了Project-ALPHA的真相，试图收集证据并向教育部门举报。
+                                2024年3月24日被控制，现关押在实验楼秘密房间B-7。
+                                对外宣称"因家庭原因请假回家"。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="access-granted rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-key mr-3"></i>
+                            访问权限验证
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span>管理员权限：</span>
+                                <span class="text-green-400">✓ 已验证</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>安全级别：</span>
+                                <span class="text-yellow-400">最高机密</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>访问时间：</span>
+                                <span id="current-time"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 文件列表 -->
+        <div id="file-list" class="grid md:grid-cols-3 gap-6 hidden">
+            <div class="file-item rounded-lg p-6" onclick="showFile('experiment')">
+                <div class="text-center">
+                    <i class="fas fa-flask text-4xl text-cyan-400 mb-4"></i>
+                    <h3 class="text-lg font-bold mb-2">实验记录</h3>
+                    <p class="text-sm text-gray-400">详细的实验数据和结果</p>
+                </div>
+            </div>
+            
+            <div class="file-item rounded-lg p-6" onclick="showFile('subjects')">
+                <div class="text-center">
+                    <i class="fas fa-users text-4xl text-purple-400 mb-4"></i>
+                    <h3 class="text-lg font-bold mb-2">实验对象</h3>
+                    <p class="text-sm text-gray-400">参与实验的学生名单</p>
+                </div>
+            </div>
+            
+            <div class="file-item rounded-lg p-6" onclick="showFile('location')">
+                <div class="text-center">
+                    <i class="fas fa-map-marker-alt text-4xl text-red-400 mb-4"></i>
+                    <h3 class="text-lg font-bold mb-2">地点信息</h3>
+                    <p class="text-sm text-gray-400">秘密实验室的位置</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 文件内容模态框 -->
+    <div id="file-modal" class="fixed inset-0 bg-black bg-opacity-90 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-gray-900 rounded-lg max-w-4xl w-full max-h-screen overflow-y-auto">
+                <div class="p-6 border-b border-gray-700">
+                    <div class="flex justify-between items-center">
+                        <h3 id="file-title" class="text-2xl font-bold text-white"></h3>
+                        <button onclick="closeFileModal()" class="text-gray-400 hover:text-white text-2xl">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="file-content-area" class="p-6">
+                    <!-- 文件内容将在这里显示 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 检查是否是完整访问（从游戏按钮进入）
+        function isFullAccess() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('full') === '1';
+        }
+        
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            if (isFullAccess()) {
+                // 完整访问：显示所有内容
+                setTimeout(() => {
+                    document.getElementById('file-content').classList.remove('hidden');
+                    document.getElementById('file-list').classList.remove('hidden');
+                    updateCurrentTime();
+                    setInterval(updateCurrentTime, 1000);
+                }, 3000);
+            } else {
+                // 第一次访问：只显示密码
+                setTimeout(() => {
+                    document.getElementById('password-only').classList.remove('hidden');
+                }, 2000);
+            }
+        });
+
+        // 更新当前时间
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            const timeElement = document.getElementById('current-time');
+            if (timeElement) {
+                timeElement.textContent = timeString;
+            }
+        }
+
+        // 显示文件内容
+        function showFile(fileType) {
+            const modal = document.getElementById('file-modal');
+            const title = document.getElementById('file-title');
+            const content = document.getElementById('file-content-area');
+            
+            switch(fileType) {
+                case 'experiment':
+                    title.innerHTML = '<i class="fas fa-flask mr-2"></i>实验记录';
+                    content.innerHTML = `
+                        <div class="space-y-6">
+                            <div class="bg-red-900 bg-opacity-30 p-4 rounded-lg">
+                                <h4 class="font-bold text-red-300 mb-3">实验阶段一：认知增强</h4>
+                                <ul class="text-red-200 space-y-2 text-sm">
+                                    <li>• 使用Nootropic药物提升记忆力和注意力</li>
+                                    <li>• 每日剂量：10mg，分两次服用</li>
+                                    <li>• 副作用：轻微头痛、失眠</li>
+                                    <li>• 效果：学习效率提升35%</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-orange-900 bg-opacity-30 p-4 rounded-lg">
+                                <h4 class="font-bold text-orange-300 mb-3">实验阶段二：记忆强化</h4>
+                                <ul class="text-orange-200 space-y-2 text-sm">
+                                    <li>• 使用记忆宫殿训练法</li>
+                                    <li>• 每日训练时间：2小时</li>
+                                    <li>• 记忆容量提升：50%</li>
+                                    <li>• 长期记忆保持率：85%</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-yellow-900 bg-opacity-30 p-4 rounded-lg">
+                                <h4 class="font-bold text-yellow-300 mb-3">实验阶段三：压力测试</h4>
+                                <ul class="text-yellow-200 space-y-2 text-sm">
+                                    <li>• 模拟高考环境测试</li>
+                                    <li>• 连续学习时间：12小时</li>
+                                    <li>• 压力耐受性提升：40%</li>
+                                    <li>• 成绩稳定性：显著提升</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'subjects':
+                    title.innerHTML = '<i class="fas fa-users mr-2"></i>实验对象名单';
+                    content.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="bg-gray-800 bg-opacity-50 p-4 rounded-lg">
+                                <div class="grid grid-cols-4 gap-4 text-sm font-bold text-gray-300 mb-3">
+                                    <div>姓名</div>
+                                    <div>年级</div>
+                                    <div>加入时间</div>
+                                    <div>状态</div>
+                                </div>
+                                
+                                <div class="space-y-3">
+                                    <div class="grid grid-cols-4 gap-4 text-sm">
+                                        <div>张昊</div>
+                                        <div>高三</div>
+                                        <div>2024-03-15</div>
+                                        <div class="text-red-400">被控制</div>
+                                    </div>
+                                    <div class="grid grid-cols-4 gap-4 text-sm">
+                                        <div>李明</div>
+                                        <div>高二</div>
+                                        <div>2024-03-20</div>
+                                        <div class="text-yellow-400">观察中</div>
+                                    </div>
+                                    <div class="grid grid-cols-4 gap-4 text-sm">
+                                        <div>王小红</div>
+                                        <div>高三</div>
+                                        <div>2024-03-18</div>
+                                        <div class="text-green-400">正常</div>
+                                    </div>
+                                    <div class="grid grid-cols-4 gap-4 text-sm">
+                                        <div>赵强</div>
+                                        <div>高二</div>
+                                        <div>2024-03-22</div>
+                                        <div class="text-green-400">正常</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="warning-box p-4 rounded-lg">
+                                <p class="text-sm">
+                                    <strong>注意：</strong>张昊因发现实验真相并试图举报，
+                                    已被特殊处理。其他学生继续按计划进行实验。
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'location':
+                    title.innerHTML = '<i class="fas fa-map-marker-alt mr-2"></i>秘密实验室位置';
+                    content.innerHTML = `
+                        <div class="space-y-6">
+                            <div class="bg-blue-900 bg-opacity-30 p-4 rounded-lg">
+                                <h4 class="font-bold text-blue-300 mb-3">实验室布局</h4>
+                                <div class="grid grid-cols-3 gap-4 text-sm">
+                                    <div class="bg-black bg-opacity-50 p-3 rounded text-center">
+                                        <div class="text-red-400 font-bold">B-1</div>
+                                        <div class="text-xs text-gray-400">药物储存</div>
+                                    </div>
+                                    <div class="bg-black bg-opacity-50 p-3 rounded text-center">
+                                        <div class="text-red-400 font-bold">B-2</div>
+                                        <div class="text-xs text-gray-400">测试室</div>
+                                    </div>
+                                    <div class="bg-black bg-opacity-50 p-3 rounded text-center">
+                                        <div class="text-red-400 font-bold">B-3</div>
+                                        <div class="text-xs text-gray-400">监控室</div>
+                                    </div>
+                                    <div class="bg-black bg-opacity-50 p-3 rounded text-center">
+                                        <div class="text-red-400 font-bold">B-4</div>
+                                        <div class="text-xs text-gray-400">数据分析</div>
+                                    </div>
+                                    <div class="bg-red-900 bg-opacity-50 p-3 rounded text-center border-2 border-red-400">
+                                        <div class="text-red-400 font-bold">B-7</div>
+                                        <div class="text-xs text-red-300">关押室</div>
+                                    </div>
+                                    <div class="bg-black bg-opacity-50 p-3 rounded text-center">
+                                        <div class="text-red-400 font-bold">B-8</div>
+                                        <div class="text-xs text-gray-400">档案室</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-green-900 bg-opacity-30 p-4 rounded-lg">
+                                <h4 class="font-bold text-green-300 mb-3">进入方法</h4>
+                                <ul class="text-green-200 space-y-2 text-sm">
+                                    <li>• 实验楼地下二层，电梯需要特殊卡片</li>
+                                    <li>• 楼梯间有监控，需要避开保安巡逻时间</li>
+                                    <li>• B-7房间需要指纹+密码双重验证</li>
+                                    <li>• 密码：324715（实验开始日期+项目编号）</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="warning-box p-4 rounded-lg">
+                                <h4 class="font-bold mb-2 text-red-300">危险警告</h4>
+                                <p class="text-red-200 text-sm">
+                                    该区域有24小时监控和保安巡逻，进入需要极度小心。
+                                    建议携带通讯设备和应急工具。
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        // 关闭文件模态框
+        function closeFileModal() {
+            document.getElementById('file-modal').classList.add('hidden');
+        }
+
+        // 点击模态框外部关闭
+        document.getElementById('file-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeFileModal();
+            }
+        });
+    </script>
+</body>
+</html>
